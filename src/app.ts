@@ -2,7 +2,10 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import express from 'express';
-import db from '../config/db.config.mjs';
+import database from '../config/db.config.mjs';
+// import postRoutes from './routes/posts';
+import userRoutes from './routes/user/index.js';
+// import userPostsRoutes from './routes/user-posts';
 
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
@@ -10,14 +13,12 @@ const __dirname = path.dirname(__filename);
 
 // Load environment variables from the .env file located in the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
-// import postRoutes from './routes/posts';
-// import userRoutes from './routes/user';
-// import userPostsRoutes from './routes/user-posts';
+
 
 
 const app = express();
 
-db.authenticate()
+database.authenticate()
     .then(() => console.log("Database Connected!"))
     .catch((err: Error) => console.log(err));
 
@@ -31,7 +32,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.use('/api/auth', userRoutes);
+app.use('/api/user', userRoutes);
 // app.use('/api/posts', postRoutes);
 // app.use('/api/user-posts', userPostsRoutes);
 
