@@ -1,11 +1,12 @@
-import { Sequelize, DataTypes, Model } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import database from '../../../config/db.config.mjs';
-const sequelize = new Sequelize(database);
+const sequelize = database;
 class User extends Model {
 }
 User.init({
     id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         primaryKey: true,
         autoIncrement: true,
     },
@@ -20,15 +21,6 @@ User.init({
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
-    age: {
-        type: DataTypes.INTEGER,
-    },
-    image: {
-        type: DataTypes.STRING,
-    },
-    gender: {
-        type: DataTypes.STRING,
     },
     nationality: {
         type: DataTypes.STRING,
@@ -54,13 +46,27 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
+    age: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    image: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    gender: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     banned: {
         type: DataTypes.BOOLEAN,
+        allowNull: true,
     },
 }, {
     sequelize,
     modelName: "user",
-    timestamps: true,
+    tableName: "users",
+    timestamps: false,
 });
 export default User;
 //# sourceMappingURL=index.js.map

@@ -2,29 +2,30 @@ import { Sequelize, DataTypes, Model } from "sequelize";
 import database from '../../../config/db.config.mjs';
 import { UserT } from "../../types/user.js";
 
-const sequelize = new Sequelize(database);
+const sequelize = database;
 
-class User extends Model<UserT>  {
-  public id: number;
+class User extends Model<UserT> {
+  public id!: number; // Add the id field
   public email!: string;
-  public password: string;
+  public password!: string;
   public name!: string;
-  public age!: number | null;
-  public image!: string | null;
-  public gender!: string | null;
   public nationality!: string;
   public country!: string;
   public native_language!: string;
   public teaching_language!: string;
   public learning_language!: string;
   public device_identifier!: string;
-  public banned!: boolean | null;
+  public age!: number | null; // Add the age field
+  public image!: string | null; // Add the image field
+  public gender!: string | null; // Add the gender field
+  public banned!: boolean | null; // Add the banned field
 }
 
 User.init(
   {
     id: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -39,15 +40,6 @@ User.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    age: {
-      type: DataTypes.INTEGER,
-    },
-    image: {
-      type: DataTypes.STRING,
-    },
-    gender: {
-      type: DataTypes.STRING,
     },
     nationality: {
       type: DataTypes.STRING,
@@ -73,14 +65,28 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    age: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     banned: {
       type: DataTypes.BOOLEAN,
+      allowNull: true,
     },
   },
   {
     sequelize,
-    modelName: "user", // Set your model name here
-    timestamps: true,
+    modelName: "user",
+    tableName: "users",
+    timestamps: false,
   }
 );
 
