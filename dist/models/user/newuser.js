@@ -36,11 +36,7 @@ NewUser.init({
     learning_language: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
-    device_identifier: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+    }
 }, {
     sequelize,
     modelName: "newUser",

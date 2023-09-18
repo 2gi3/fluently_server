@@ -7,13 +7,13 @@ export interface NewUserT {
     native_language: string;
     teaching_language: string;
     learning_language: string;
-    device_identifier: string;
 }
 
 export interface UserT extends NewUserT {
     id: number;
     age?: number | null;
     image?: string | null;
+    description?: string | null;
     gender?: Gender | null;
     banned?: boolean | null;
 }

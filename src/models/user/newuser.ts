@@ -14,7 +14,6 @@ class NewUser extends Model<NewUserT> {
     public native_language!: string;
     public teaching_language!: string;
     public learning_language!: string;
-    public device_identifier!: string;
 }
 
 NewUser.init(
@@ -50,11 +49,7 @@ NewUser.init(
         learning_language: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        device_identifier: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
+        }
     },
     {
         sequelize,

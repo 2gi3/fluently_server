@@ -28,5 +28,4 @@ if (
 } else {
     console.log('One of the following environment variables is not a string: DB, USER, PWD')
 }
-console.log(process.env.DB)
 export default database;

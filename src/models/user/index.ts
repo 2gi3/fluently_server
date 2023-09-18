@@ -5,7 +5,7 @@ import { UserT } from "../../types/user.js";
 const sequelize = database;
 
 class User extends Model<UserT> {
-  public id!: number; // Add the id field
+  public id!: number;
   public email!: string;
   public password!: string;
   public name!: string;
@@ -14,11 +14,11 @@ class User extends Model<UserT> {
   public native_language!: string;
   public teaching_language!: string;
   public learning_language!: string;
-  public device_identifier!: string;
-  public age!: number | null; // Add the age field
-  public image!: string | null; // Add the image field
-  public gender!: string | null; // Add the gender field
-  public banned!: boolean | null; // Add the banned field
+  public description!: string;
+  public age!: number | null;
+  public image!: string | null;
+  public gender!: string | null;
+  public banned!: boolean | null;
 }
 
 User.init(
@@ -61,9 +61,9 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    device_identifier: {
+    description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     age: {
       type: DataTypes.INTEGER,

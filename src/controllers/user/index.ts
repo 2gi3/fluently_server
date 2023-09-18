@@ -3,8 +3,10 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import NewUser from '../../models/user/newuser.js';
 import User from '../../models/user/index.js';
+import { UserT } from '../../types/user.js';
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
+
     try {
         const {
             email,
@@ -15,7 +17,6 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
             native_language,
             teaching_language,
             learning_language,
-            device_identifier,
         } = req.body;
 
         const hash = await bcrypt.hash(password, 10);
@@ -29,13 +30,25 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
             native_language,
             teaching_language,
             learning_language,
-            device_identifier,
         });
 
-        await user.save();
+        const createdUser: any = await user.save();
+
+        const token = jwt.sign(
+            { id: createdUser.id },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: '24h' }
+        );
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+            maxAge: 24 * 60 * 60 * 1000,
+        });
 
         res.status(201).json({
             message: 'New user added successfully!',
+            user: createdUser
         });
     } catch (error) {
         res.status(500).json({
@@ -49,7 +62,6 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
 
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log(process.env.JWT_SECRET)
     try {
         const user = await User.findOne({ where: { email: req.body.email } });
 
@@ -73,7 +85,12 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
             { expiresIn: '24h' }
         );
 
-        res.setHeader('Authorization', 'Bearer ' + token);
+        // res.setHeader('Authorization', 'Bearer ' + token);
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+            maxAge: 24 * 60 * 60 * 1000,
+        });
         res.status(200).json({
             id: user.id,
             name: user.name,
@@ -84,7 +101,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
             native_language: user.native_language,
             teaching_language: user.teaching_language,
             learning_language: user.learning_language,
-            device_identifier: user.device_identifier,
+            description: user.description,
             age: user.age || null,
             image: user.image || null,
             gender: user.gender || null,

@@ -12,7 +12,7 @@ CREATE TABLE users (
     native_language VARCHAR(50) NOT NULL,
     teaching_language VARCHAR(50) NOT NULL,
     learning_language VARCHAR(50)NOT NULL,
-    device_identifier VARCHAR(300) NOT NULL,
+    description VARCHAR(300),
     banned boolean
 );
 

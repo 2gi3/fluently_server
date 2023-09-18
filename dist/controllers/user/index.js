@@ -3,8 +3,11 @@ import jwt from 'jsonwebtoken';
 import NewUser from '../../models/user/newuser.js';
 import User from '../../models/user/index.js';
 export const signup = async (req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     try {
-        const { email, password, name, nationality, country, native_language, teaching_language, learning_language, device_identifier, } = req.body;
+        const { email, password, name, nationality, country, native_language, teaching_language, learning_language, } = req.body;
         const hash = await bcrypt.hash(password, 10);
         const user = new NewUser({
             email,
@@ -15,11 +18,11 @@ export const signup = async (req, res, next) => {
             native_language,
             teaching_language,
             learning_language,
-            device_identifier,
         });
         await user.save();
         res.status(201).json({
             message: 'New user added successfully!',
+            user
         });
     }
     catch (error) {
@@ -29,7 +32,6 @@ export const signup = async (req, res, next) => {
     }
 };
 export const login = async (req, res, next) => {
-    console.log(process.env.JWT_SECRET);
     try {
         const user = await User.findOne({ where: { email: req.body.email } });
         if (!user) {
@@ -55,7 +57,7 @@ export const login = async (req, res, next) => {
             native_language: user.native_language,
             teaching_language: user.teaching_language,
             learning_language: user.learning_language,
-            device_identifier: user.device_identifier,
+            description: user.description,
             age: user.age || null,
             image: user.image || null,
             gender: user.gender || null,

@@ -42,9 +42,9 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
-    device_identifier: {
+    description: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     age: {
         type: DataTypes.INTEGER,
