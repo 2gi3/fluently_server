@@ -97,4 +97,19 @@ export const deleteUser = async (req, res, next) => {
         });
     });
 };
+export const getAllUsers = async (req, res, next) => {
+    console.log(req.params.id);
+    User.findAll(
+    // include{
+    //   "userId": "userId",
+    //   "learning_language" : 'learning-language'
+    // }
+    ).then((users) => {
+        res.status(200).json(users);
+    }).catch((error) => {
+        res.status(400).json({
+            error: error
+        });
+    });
+};
 //# sourceMappingURL=index.js.map

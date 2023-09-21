@@ -142,3 +142,23 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
         }
     );
 }
+
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log(req.params.id)
+    User.findAll(
+        // include{
+        //   "userId": "userId",
+        //   "learning_language" : 'learning-language'
+        // }
+    ).then(
+        (users) => {
+            res.status(200).json(users);
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                error: error
+            });
+        }
+    );
+}
