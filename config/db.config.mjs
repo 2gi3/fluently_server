@@ -13,15 +13,17 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 let database
 if (
+    typeof process.env.HOST === 'string' && process.env.HOST.trim() !== '' &&
     typeof process.env.DB === 'string' && process.env.DB.trim() !== '' &&
     typeof process.env.USER === 'string' && process.env.USER.trim() !== '' &&
     typeof process.env.PWD === 'string' && process.env.PWD.trim() !== '') {
 
     database = new Sequelize(process.env.DB, process.env.USER, process.env.PWD, {
-        host: "localhost",
+        host: process.env.HOST,
         dialect: "mysql"
     });
 } else {
     console.log('One of the following environment variables is not a string: DB, USER, PWD')
 }
+console.log(process.env.DB)
 export default database;
