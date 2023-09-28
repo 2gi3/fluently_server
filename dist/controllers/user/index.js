@@ -112,4 +112,43 @@ export const getAllUsers = async (req, res, next) => {
         });
     });
 };
+export const updateUser = async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+        // These fields should not be updated
+        const excludedFields = [
+            'nationality',
+            'country',
+            'native_language',
+            'teaching_language',
+            'learning_language',
+            'gender',
+            'age',
+        ];
+        const updatedFields = Object.keys(req.body).reduce((acc, key) => {
+            if (!excludedFields.includes(key)) {
+                acc[key] = req.body[key];
+            }
+            return acc;
+        }, {});
+        const updatedUser = await User.update(updatedFields, {
+            where: { id: userId },
+        });
+        if (updatedUser[0] === 1) {
+            res.status(200).json({
+                message: 'User information updated successfully!',
+            });
+        }
+        else {
+            res.status(404).json({
+                error: 'User not found or no fields to update.',
+            });
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error.message,
+        });
+    }
+};
 //# sourceMappingURL=index.js.map
