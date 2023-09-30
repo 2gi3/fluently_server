@@ -277,11 +277,14 @@ export const updateUser = async (
 
         }
 
-        const updatedUser = await User.update(updatedFields, {
+        const [affectedRows] = await User.update(updatedFields, {
             where: { id: userId },
         });
 
-        if (updatedUser[0] === 1) {
+        if (affectedRows === 1) {
+
+            const updatedUser = await User.findOne({ where: { id: userId } });
+
             if (!responseMesage || !newImageUrl) {
                 res.status(200).json({
                     message: 'User information updated successfully!',
