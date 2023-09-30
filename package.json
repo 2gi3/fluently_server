@@ -29,6 +29,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.1",
     "mysql2": "^3.6.0",
-    "sequelize": "^6.33.0"
+    "sequelize": "^6.33.0",
+    "sharp": "^0.32.6"
   }
 }
