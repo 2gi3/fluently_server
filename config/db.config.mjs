@@ -10,20 +10,19 @@ const __dirname = path.dirname(__filename);
 // Load environment variables from the .env file located in the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-console.log({ host: process.env.HOST })
-console.log({ user: process.env.USER })
+console.log({ host: process.env.DATABASE_HOST })
+console.log({ user: process.env.DATABASE_USER })
 console.log({ db: process.env.DB })
-console.log({ pwd: process.env.PWD })
-const username = 'admin';
+console.log({ pwd: process.env.DATABASE_PWD })
 let database
 if (
-    typeof process.env.HOST === 'string' && process.env.HOST.trim() !== '' &&
+    typeof process.env.DATABASE_HOST === 'string' && process.env.DATABASE_HOST.trim() !== '' &&
     typeof process.env.DB === 'string' && process.env.DB.trim() !== '' &&
-    typeof process.env.USER === 'string' && process.env.USER.trim() !== '' &&
-    typeof process.env.PWD === 'string' && process.env.PWD.trim() !== '') {
+    typeof process.env.DATABASE_USER === 'string' && process.env.DATABASE_USER.trim() !== '' &&
+    typeof process.env.DATABASE_PWD === 'string' && process.env.DATABASE_PWD.trim() !== '') {
 
-    database = new Sequelize(process.env.DB, username, process.env.PWD, {
-        host: process.env.HOST,
+    database = new Sequelize(process.env.DB, process.env.DATABASE_USER, process.env.DATABASE_PWD, {
+        host: process.env.DATABASE_HOST,
         dialect: "mysql"
     });
 } else {
