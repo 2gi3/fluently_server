@@ -10,9 +10,11 @@ const __dirname = path.dirname(__filename);
 // Load environment variables from the .env file located in the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-console.log(process.env.HOST)
-console.log(process.env.USER)
-
+console.log({ host: process.env.HOST })
+console.log({ user: process.env.USER })
+console.log({ db: process.env.DB })
+console.log({ pwd: process.env.PWD })
+const username = 'admin';
 let database
 if (
     typeof process.env.HOST === 'string' && process.env.HOST.trim() !== '' &&
@@ -20,7 +22,7 @@ if (
     typeof process.env.USER === 'string' && process.env.USER.trim() !== '' &&
     typeof process.env.PWD === 'string' && process.env.PWD.trim() !== '') {
 
-    database = new Sequelize(process.env.DB, process.env.USER, process.env.PWD, {
+    database = new Sequelize(process.env.DB, username, process.env.PWD, {
         host: process.env.HOST,
         dialect: "mysql"
     });
