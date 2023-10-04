@@ -14,6 +14,9 @@ console.log({ host: process.env.DATABASE_HOST })
 console.log({ user: process.env.DATABASE_USER })
 console.log({ db: process.env.DB })
 console.log({ pwd: process.env.DATABASE_PWD })
+const connectionUri = `mysql://${process.env.DATABASE_USER}:${process.env.DATABASE_PWD}@${process.env.DATABASE_HOST}/${process.env.DB}`;
+console.log('Connection URI:', connectionUri);
+
 let database
 if (
     typeof process.env.DATABASE_HOST === 'string' && process.env.DATABASE_HOST.trim() !== '' &&
@@ -21,10 +24,7 @@ if (
     typeof process.env.DATABASE_USER === 'string' && process.env.DATABASE_USER.trim() !== '' &&
     typeof process.env.DATABASE_PWD === 'string' && process.env.DATABASE_PWD.trim() !== '') {
 
-    database = new Sequelize(process.env.DB, process.env.DATABASE_USER, process.env.DATABASE_PWD, {
-        host: process.env.DATABASE_HOST,
-        dialect: "mysql"
-    });
+    database = new Sequelize(connectionUri);
 } else {
     console.log('One of the following environment variables is not a string: DB, USER, PWD')
 }
