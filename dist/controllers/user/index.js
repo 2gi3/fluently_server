@@ -111,7 +111,6 @@ export const deleteUser = async (req, res, next) => {
     });
 };
 export const getAllUsers = async (req, res, next) => {
-    console.log(req.params.id);
     User.findAll(
     // include{
     //   "userId": "userId",
@@ -124,6 +123,21 @@ export const getAllUsers = async (req, res, next) => {
             error: error
         });
     });
+};
+export const getOneUser = async (req, res, next) => {
+    // console.log(req.params.id)
+    try {
+        const user = await User.findOne({ where: { id: req.params.id } });
+        if (user) {
+            res.status(200).json(user);
+        }
+        else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 export const updateUser = async (req, res, next) => {
     let responseMesage = null;

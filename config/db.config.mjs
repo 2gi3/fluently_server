@@ -10,6 +10,8 @@ const __dirname = path.dirname(__filename);
 // Load environment variables from the .env file located in the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+console.log(process.env.HOST)
+console.log(process.env.USER)
 
 let database
 if (
