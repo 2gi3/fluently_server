@@ -21,4 +21,5 @@ check status: pm2 status | pm2 list
 - [Watch this video](https://www.youtube.com/watch?v=Kk9kuf6D8so)
 -  Allow inbound to port 80
 -  Stop server 
--  run ` sudo certbot certonly --standalone`
+-  Run ` sudo certbot certonly --standalone`
+-  Save certificates to /certificates (ignored by git)

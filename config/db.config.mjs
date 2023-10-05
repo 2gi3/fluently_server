@@ -10,10 +10,7 @@ const __dirname = path.dirname(__filename);
 // Load environment variables from the .env file located in the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-console.log({ host: process.env.DATABASE_HOST })
-console.log({ user: process.env.DATABASE_USER })
-console.log({ db: process.env.DB })
-console.log({ pwd: process.env.DATABASE_PWD })
+
 const connectionUri = `mysql://${process.env.DATABASE_USER}:${process.env.DATABASE_PWD}@${process.env.DATABASE_HOST}/${process.env.DB}`;
 console.log('Connection URI:', connectionUri);
 
