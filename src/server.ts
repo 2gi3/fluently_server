@@ -1,5 +1,13 @@
-import http from 'http';
+import https from 'https';
 import app from './app.js';
+import fs from 'fs';
+
+
+
+const privateKey = fs.readFileSync('./certificates/privkey1.pem', 'utf8');
+const certificate = fs.readFileSync('./certificates/cert1.pem', 'utf8');
+
+const credentials = { key: privateKey, cert: certificate };
 
 const normalizePort = (val: string) => {
     const port = parseInt(val, 10);
@@ -13,7 +21,7 @@ const normalizePort = (val: string) => {
     return false;
 };
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
 
 const errorHandler = (error: NodeJS.ErrnoException) => {
@@ -36,7 +44,7 @@ const errorHandler = (error: NodeJS.ErrnoException) => {
     }
 };
 
-const server = http.createServer(app);
+const server = https.createServer(credentials, app);
 
 server.on('error', errorHandler);
 server.on('listening', () => {
