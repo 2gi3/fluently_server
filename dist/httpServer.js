@@ -10,7 +10,7 @@ const normalizePort = (val) => {
     }
     return false;
 };
-const port = normalizePort(process.env.PORT || '443');
+const port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
 const errorHandler = (error) => {
     if (error.syscall !== 'listen') {
