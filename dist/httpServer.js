@@ -1,18 +1,7 @@
-import https from 'https';
-import fs from 'fs';
-import express from 'express';
-
-const app = express();
-
-
-const privateKey = fs.readFileSync('./certificates/privkey1.pem', 'utf8');
-const certificate = fs.readFileSync('./certificates/cert1.pem', 'utf8');
-
-const credentials = { key: privateKey, cert: certificate };
-
+import http from 'http';
+import app from './app.js';
 const normalizePort = (val) => {
     const port = parseInt(val, 10);
-
     if (isNaN(port)) {
         return val;
     }
@@ -21,17 +10,13 @@ const normalizePort = (val) => {
     }
     return false;
 };
-
-const port = normalizePort(process.env.PORT || '443');
-
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-const httpsServer = https.createServer(credentials, app);
-
 const errorHandler = (error) => {
     if (error.syscall !== 'listen') {
         throw error;
     }
-    const address = httpsServer.address();
+    const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
     switch (error.code) {
         case 'EACCES':
@@ -46,13 +31,12 @@ const errorHandler = (error) => {
             throw error;
     }
 };
-
-
-httpsServer.on('error', errorHandler);
-httpsServer.on('listening', () => {
-    const address = httpsServer.address();
+const server = http.createServer(app);
+server.on('error', errorHandler);
+server.on('listening', () => {
+    const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
     console.log('Listening on ' + bind);
 });
-
-httpsServer.listen(port);
+server.listen(port);
+//# sourceMappingURL=httpServer.js.map

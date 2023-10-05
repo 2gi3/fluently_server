@@ -1,11 +1,9 @@
-import https from 'https';
+import http from 'http';
 import app from './app.js';
-import fs from 'fs';
-const privateKey = fs.readFileSync('../certificates/privkey1.pem', 'utf8');
-const certificate = fs.readFileSync('../certificates/cert1.pem', 'utf8');
-const credentials = { key: privateKey, cert: certificate };
-const normalizePort = (val) => {
+
+const normalizePort = (val: string) => {
     const port = parseInt(val, 10);
+
     if (isNaN(port)) {
         return val;
     }
@@ -14,9 +12,11 @@ const normalizePort = (val) => {
     }
     return false;
 };
-const port = normalizePort(process.env.PORT || '443');
+
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-const errorHandler = (error) => {
+
+const errorHandler = (error: NodeJS.ErrnoException) => {
     if (error.syscall !== 'listen') {
         throw error;
     }
@@ -35,12 +35,14 @@ const errorHandler = (error) => {
             throw error;
     }
 };
-const server = https.createServer(credentials, app);
+
+const server = http.createServer(app);
+
 server.on('error', errorHandler);
 server.on('listening', () => {
     const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
     console.log('Listening on ' + bind);
 });
+
 server.listen(port);
-//# sourceMappingURL=server.js.map
