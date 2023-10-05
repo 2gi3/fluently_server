@@ -1,9 +1,13 @@
-import https from 'https';
+import http from 'http';
 import app from './app.js';
-import fs from 'fs';
-const privateKey = fs.readFileSync('../certificates/privkey1.pem', 'utf8');
-const certificate = fs.readFileSync('../certificates/cert1.pem', 'utf8');
-const credentials = { key: privateKey, cert: certificate };
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import path from 'path';
+// Get the directory name of the current module file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Load environment variables from the .env file located in the parent directory
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const normalizePort = (val) => {
     const port = parseInt(val, 10);
     if (isNaN(port)) {
@@ -14,7 +18,7 @@ const normalizePort = (val) => {
     }
     return false;
 };
-const port = normalizePort(process.env.PORT || '443');
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 const errorHandler = (error) => {
     if (error.syscall !== 'listen') {
@@ -35,7 +39,7 @@ const errorHandler = (error) => {
             throw error;
     }
 };
-const server = https.createServer(credentials, app);
+const server = http.createServer(app);
 server.on('error', errorHandler);
 server.on('listening', () => {
     const address = server.address();

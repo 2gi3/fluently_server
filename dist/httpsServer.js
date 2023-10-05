@@ -1,9 +1,16 @@
 import https from 'https';
+import app from './app.js';
 import fs from 'fs';
-import express from 'express';
-const app = express();
-const privateKey = fs.readFileSync('./certificates/privkey1.pem', 'utf8');
-const certificate = fs.readFileSync('./certificates/cert1.pem', 'utf8');
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import path from 'path';
+// Get the directory name of the current module file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Load environment variables from the .env file located in the parent directory
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+const privateKey = fs.readFileSync('../certificates/privkey1.pem', 'utf8');
+const certificate = fs.readFileSync('../certificates/cert1.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 const normalizePort = (val) => {
     const port = parseInt(val, 10);
@@ -17,12 +24,11 @@ const normalizePort = (val) => {
 };
 const port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
-const httpsServer = https.createServer(credentials, app);
 const errorHandler = (error) => {
     if (error.syscall !== 'listen') {
         throw error;
     }
-    const address = httpsServer.address();
+    const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
     switch (error.code) {
         case 'EACCES':
@@ -37,11 +43,12 @@ const errorHandler = (error) => {
             throw error;
     }
 };
-httpsServer.on('error', errorHandler);
-httpsServer.on('listening', () => {
-    const address = httpsServer.address();
+const server = https.createServer(credentials, app);
+server.on('error', errorHandler);
+server.on('listening', () => {
+    const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
     console.log('Listening on ' + bind);
 });
-httpsServer.listen(port);
+server.listen(port);
 //# sourceMappingURL=httpsServer.js.map
