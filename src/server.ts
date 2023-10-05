@@ -4,8 +4,8 @@ import fs from 'fs';
 
 
 
-const privateKey = fs.readFileSync('./certificates/privkey1.pem', 'utf8');
-const certificate = fs.readFileSync('./certificates/cert1.pem', 'utf8');
+const privateKey = fs.readFileSync('../certificates/privkey1.pem', 'utf8');
+const certificate = fs.readFileSync('../certificates/cert1.pem', 'utf8');
 
 const credentials = { key: privateKey, cert: certificate };
 
