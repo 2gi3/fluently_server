@@ -1,3 +1,7 @@
+Node version: 20.5.1.
+
+This is an Express.js API designed for: [fluently_client](https://github.com/2gi3/fluently_client)
+
 ## Environment variables
 -  DB
 -  USER
