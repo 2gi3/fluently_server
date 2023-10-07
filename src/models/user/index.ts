@@ -19,6 +19,8 @@ class User extends Model<UserT> {
   public image!: string | null;
   public gender!: string | null;
   public banned!: boolean | null;
+  public status!: string | null;
+
 }
 
 User.init(
@@ -81,6 +83,10 @@ User.init(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     sequelize,

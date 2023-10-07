@@ -1,5 +1,6 @@
+
 CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     email VARCHAR(50) NOT NULL,
     password VARCHAR(300) NOT NULL,
@@ -11,10 +12,66 @@ CREATE TABLE users (
     country VARCHAR(50) NOT NULL,
     native_language VARCHAR(50) NOT NULL,
     teaching_language VARCHAR(50) NOT NULL,
-    learning_language VARCHAR(50)NOT NULL,
+    learning_language VARCHAR(50) NOT NULL,
     description VARCHAR(300),
-    banned boolean
+    banned BOOLEAN,
+    status VARCHAR(15)
 );
+
+
+CREATE TABLE chat (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    last_message_id INT
+);
+
+CREATE TABLE message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    chatId INT NOT NULL,
+    userId INT NOT NULL,
+    text VARCHAR(500) NOT NULL,
+    status VARCHAR(15) NOT NULL
+);
+
+ALTER TABLE message
+ADD CONSTRAINT FK_message_chat FOREIGN KEY (chatId) REFERENCES chat(id);
+
+ALTER TABLE message
+ADD CONSTRAINT FK_message_users FOREIGN KEY (userId) REFERENCES users(id);
+
+CREATE TABLE user_chat (
+    user_id INT NOT NULL,
+    chat_id INT NOT NULL,
+    PRIMARY KEY (user_id, chat_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (chat_id) REFERENCES chat(id)
+);
+
+-- CREATE TABLE chat (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     last_message_id INT,
+--     FOREIGN KEY (last_message_id) REFERENCES message(id)
+-- );
+
+-- CREATE TABLE message (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     chatId INT NOT NULL,
+--     userId INT NOT NULL,
+--     text VARCHAR(500) NOT NULL,
+--     status VARCHAR(15) NOT NULL,
+--     FOREIGN KEY (chatId) REFERENCES chat(id),
+--     FOREIGN KEY (userId) REFERENCES users(id)
+-- );
+
+-- CREATE TABLE user_chat (
+--     user_id INT NOT NULL,
+--     chat_id INT NOT NULL,
+--     PRIMARY KEY (user_id, chat_id),
+--     FOREIGN KEY (user_id) REFERENCES users(id),
+--     FOREIGN KEY (chat_id) REFERENCES chat(id)
+-- );
+
 
 ---- COMMENTED TABLES HAVE NOT BEEN CREATED YET ----
 -- CREATE TABLE reports (

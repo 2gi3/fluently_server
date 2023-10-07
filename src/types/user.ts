@@ -16,6 +16,7 @@ export interface UserT extends NewUserT {
     description?: string | null;
     gender?: Gender | null;
     banned?: boolean | null;
+    status?: string;
 }
 
 export enum Gender {
