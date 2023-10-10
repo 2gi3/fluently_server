@@ -5,6 +5,7 @@ import express from 'express';
 import database from '../config/db.config.mjs';
 // import postRoutes from './routes/posts';
 import userRoutes from './routes/user/index.js';
+import chatRoutes from './routes/chat/index.js';
 // import userPostsRoutes from './routes/user-posts';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 // app.use('/api/posts', postRoutes);
 // app.use('/api/user-posts', userPostsRoutes);
 export default app;

@@ -12,7 +12,6 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 
 const connectionUri = `mysql://${process.env.DATABASE_USER}:${process.env.DATABASE_PWD}@${process.env.DATABASE_HOST}/${process.env.DB}`;
-console.log('Connection URI:', connectionUri);
 
 let database
 if (

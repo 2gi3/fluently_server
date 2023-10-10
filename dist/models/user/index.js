@@ -62,6 +62,10 @@ User.init({
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
 }, {
     sequelize,
     modelName: "user",
