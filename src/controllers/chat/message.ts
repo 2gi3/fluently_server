@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { Op } from 'sequelize';
 import Message from '../../models/chat/message.js';
+import Chatroom from '../../models/chat/index.js';
+import { MessageT } from '../../types/chat.js';
 
 
 // Get the directory name of the current module file
@@ -22,6 +24,21 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
             chatId, userId, text, status
         });
         const newMessage = await message.save();
+        console.log({ newMessage: newMessage })
+        const chatroom = await Chatroom.findOne({
+            where: {
+                id: chatId,
+            }
+        });
+        console.log({ chatroom: chatroom })
+
+        if (chatroom) {
+            await Chatroom.update({ last_message_id: newMessage.id }, {
+                where: {
+                    id: chatId
+                }
+            });
+        }
 
 
         res.status(201).json({

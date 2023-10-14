@@ -5,6 +5,11 @@ import Chatroom from './index.js';
 class Message extends Model {
 }
 Message.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
     chatId: {
         type: DataTypes.INTEGER,
         allowNull: false,

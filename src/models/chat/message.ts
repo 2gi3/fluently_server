@@ -2,11 +2,24 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from '../../../config/db.config.mjs';
 import User from '../user/index.js'
 import Chatroom from './index.js'
+import { MessageT } from "../../types/chat.js";
 
-class Message extends Model { }
+
+class Message extends Model<MessageT> {
+    public id?: number;
+    public chatId: number | string;
+    public userId: number | string;
+    public text: string;
+    public status: string;
+}
 
 Message.init(
     {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         chatId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -38,6 +51,7 @@ export default Message;
 
 Message.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 Message.belongsTo(Chatroom, { foreignKey: 'chatId', as: 'chat' });
+
 
 
 // if you have a message object, you can retrieve the associated user and chatroom as follows:

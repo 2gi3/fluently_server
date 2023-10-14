@@ -8,6 +8,7 @@ class Chatroom extends Model<ChatroomT> {
   public id?: number;
   public userId!: number;
   public chatroomId!: number;
+  public last_message_id?: number;
 }
 
 Chatroom.init(
