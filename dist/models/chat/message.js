@@ -27,12 +27,16 @@ Message.init({
     status: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    created_at: {
+        type: DataTypes.DATE,
     }
 }, {
     sequelize,
     modelName: "Message",
     tableName: "messages",
     timestamps: false,
+    createdAt: 'created_at'
 });
 export default Message;
 Message.belongsTo(User, { foreignKey: 'userId', as: 'user' });

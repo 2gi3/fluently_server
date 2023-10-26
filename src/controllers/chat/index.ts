@@ -23,20 +23,43 @@ export const createChatroom = async (req: Request, res: Response, next: NextFunc
     try {
         const { user1Id, user2Id } = req.body;
 
-        const chatRoom = new Chatroom({
-            user1Id, user2Id,
-            //  id: `${user1Id}-${user2Id}-${timestamp}` 
+        const existingChatroom = await Chatroom.findOne({
+            where: {
+                [Op.or]: [
+                    {
+                        user1Id: user1Id,
+                        user2Id: user2Id,
+                    },
+                    {
+                        user1Id: user2Id,
+                        user2Id: user1Id,
+                    }
+                ]
+            }
         });
-        const newChatroom = await chatRoom.save();
+
+        if (existingChatroom) {
+            res.status(200).json({
+                message: 'Chatroom already exists',
+                chatroom: existingChatroom
+            });
+        } else {
+
+            const chatRoom = new Chatroom({
+                user1Id, user2Id,
+                //  id: `${user1Id}-${user2Id}-${timestamp}` 
+            });
+            const newChatroom = await chatRoom.save();
 
 
-        await UsersChats.create({ user_id: user1Id, chat_id: newChatroom.id });
-        await UsersChats.create({ user_id: user2Id, chat_id: newChatroom.id });
+            await UsersChats.create({ user_id: user1Id, chat_id: newChatroom.id });
+            await UsersChats.create({ user_id: user2Id, chat_id: newChatroom.id });
 
-        res.status(201).json({
-            message: 'New chat created successfully!',
-            newChatroom
-        });
+            res.status(201).json({
+                message: 'New chat created successfully!',
+                newChatroom
+            });
+        }
     } catch (error) {
         res.status(500).json({
             error: error.message,

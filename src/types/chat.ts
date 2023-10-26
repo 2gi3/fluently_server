@@ -11,5 +11,5 @@ export type MessageT = {
     userId: number | string
     text: string;
     status: string
-    createdAt?: string;
+    created_at?: string;
 };

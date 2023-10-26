@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node dist/server",
+    "start": "nodemon dist/server",
     "dev": "concurrently \"npm run build\" \"npm run start\""
   },
   "keywords": [],
@@ -30,6 +30,7 @@
     "jsonwebtoken": "^9.0.1",
     "mysql2": "^3.6.0",
     "sequelize": "^6.33.0",
-    "sharp": "^0.32.6"
+    "sharp": "^0.32.6",
+    "socket.io": "^4.7.2"
   }
 }

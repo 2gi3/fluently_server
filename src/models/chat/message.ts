@@ -11,6 +11,7 @@ class Message extends Model<MessageT> {
     public userId: number | string;
     public text: string;
     public status: string;
+    public created_at: Date;
 }
 
 Message.init(
@@ -37,6 +38,9 @@ Message.init(
         status: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        created_at: {
+            type: DataTypes.DATE,
         }
     },
     {
@@ -44,6 +48,7 @@ Message.init(
         modelName: "Message",
         tableName: "messages",
         timestamps: false,
+        createdAt: 'created_at'
     }
 );
 

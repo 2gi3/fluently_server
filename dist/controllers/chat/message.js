@@ -10,19 +10,23 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 // const timestamp = new Date().getTime();
 export const createMessage = async (req, res, next) => {
+    console.log('crz1');
     try {
         const { chatId, userId, text, status } = req.body;
+        console.log('crz2');
         const message = new Message({
             chatId, userId, text, status
         });
+        console.log({ message: message });
+        console.log('crz4');
         const newMessage = await message.save();
+        console.log('crz5');
         console.log({ newMessage: newMessage });
         const chatroom = await Chatroom.findOne({
             where: {
                 id: chatId,
             }
         });
-        console.log({ chatroom: chatroom });
         if (chatroom) {
             await Chatroom.update({ last_message_id: newMessage.id }, {
                 where: {
