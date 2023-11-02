@@ -74,8 +74,8 @@ wss.on('connection', (ws: WebSocket) => {
         if (parsedMessage.connectedUserId) {
             const userId = parsedMessage.connectedUserId;
             userSockets.set(userId, ws);
-            console.log(`User connected: ${userId}`);
-            console.log({ userSockets });
+            // console.log(`User connected: ${userId}`);
+            // console.log({ userSockets });
 
             // Send the list of connected users to the client
             const connectedUsers = Array.from(userSockets.keys());
@@ -83,6 +83,15 @@ wss.on('connection', (ws: WebSocket) => {
             // ws.send(JSON.stringify({ userSockets: Array.from(userSockets.keys()) }));
             for (const client of userSockets.values()) {
                 client.send(JSON.stringify({ userSockets: connectedUsers }));
+            }
+
+        } else if (parsedMessage.type === 'chatMessage') {
+
+            const recipientId = parsedMessage.recipient;
+            const recipientSocket = userSockets.get(recipientId);
+
+            if (recipientSocket) {
+                recipientSocket.send(message);
             }
 
         } else {
