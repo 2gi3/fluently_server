@@ -61,4 +61,28 @@ export const getAllChatroomMessages = async (req, res, next) => {
         });
     }
 };
+export const getLastChatroomMessage = async (req, res, next) => {
+    const { chatId } = req.params;
+    try {
+        const lastChatMessage = await Message.findOne({
+            where: {
+                chatId: chatId
+            },
+            order: [['created_at', 'DESC']] // Order messages by creation time in descending order
+        });
+        if (lastChatMessage) {
+            res.status(200).json(lastChatMessage);
+        }
+        else {
+            res.status(404).json({
+                error: "No messages found for this chatroom."
+            });
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
 //# sourceMappingURL=message.js.map
