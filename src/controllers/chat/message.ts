@@ -89,7 +89,7 @@ export const getLastChatroomMessage = async (req: Request, res: Response, next: 
             where: {
                 chatId: chatId
             },
-            order: [['created_at', 'DESC']] // Order messages by creation time in descending order
+            order: [['created_at', 'DESC']]
         });
 
         if (lastChatMessage) {
@@ -104,4 +104,28 @@ export const getLastChatroomMessage = async (req: Request, res: Response, next: 
             error: error.message
         });
     }
+}
+
+export const updateMessageStatus = async (req: Request, res: Response, next: NextFunction) => {
+    const { messageId } = req.params;
+    const { status } = req.body;
+
+    try {
+        const message = await Message.findByPk(messageId);
+
+        if (!message) {
+            return res.status(404).json({ error: 'Message not found' });
+        }
+
+        message.status = status;
+        await message.save();
+
+        res.status(200).json({
+            updatedMessage: message,
+            message: 'Message status updated successfully'
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+
 }
