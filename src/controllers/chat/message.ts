@@ -95,8 +95,13 @@ export const getLastChatroomMessage = async (req: Request, res: Response, next: 
         if (lastChatMessage) {
             res.status(200).json(lastChatMessage);
         } else {
-            res.status(404).json({
-                error: "No messages found for this chatroom."
+            res.status(200).json({
+                "id": 99999999999999,
+                "chatId": chatId,
+                "userId": 0,
+                "text": "This chat has been opened but no message has been sent yet",
+                "status": "read",
+                "created_at": null
             });
         }
     } catch (error) {

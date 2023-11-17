@@ -27,15 +27,13 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 const httpServer = http.createServer(app);
 
-const wss = new WebSocketServer({ server: httpServer }); // Create a WebSocket server
+const wss = new WebSocketServer({ server: httpServer });
 
 wss.on('connection', (ws) => {
     console.log('A user connected');
 
     ws.on('message', (message) => {
-        // Handle incoming WebSocket messages
         console.log('Received message from client:', message);
-        // You can handle messages as needed.
     });
 
     ws.on('close', () => {
