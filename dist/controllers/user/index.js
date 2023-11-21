@@ -142,6 +142,8 @@ export const getOneUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
     let responseMesage = null;
     let newImageUrl = null;
+    // console.log({ 'req.params.id': req.params.id })
+    // console.log({ 'req.body': req.body })
     try {
         const userId = req.params.id;
         // These fields should not be updated
@@ -160,7 +162,7 @@ export const updateUser = async (req, res, next) => {
             }
             return acc;
         }, {});
-        if (updatedFields.hasOwnProperty('imageFile')) {
+        if (updatedFields.hasOwnProperty('image')) {
             const s3 = new S3Client({
                 credentials: {
                     accessKeyId: s3BucketAccessKey,
@@ -168,10 +170,10 @@ export const updateUser = async (req, res, next) => {
                 },
                 region: s3BucketRegion
             });
-            const base64Image = updatedFields.imageFile.split(',')[1]; // Remove data:image/jpeg;base64, part
+            const base64Image = updatedFields.image.split(',')[1]; // Remove data:image/jpeg;base64, part
             const imageBuffer = Buffer.from(base64Image, 'base64');
             // Determine the file extension based on the content type (e.g., image/jpeg)
-            const contentType = req.body.imageFile.split(';')[0].split(':')[1];
+            const contentType = req.body.image.split(';')[0].split(':')[1];
             // Check if the image size is less than 100KB (100 * 1024 bytes)
             if (imageBuffer.length <= 100 * 1024) {
                 const imageName = `ProfileImage-${userId}-${Date.now()}`;
@@ -193,7 +195,7 @@ export const updateUser = async (req, res, next) => {
                     console.error('Error uploading image:', err);
                 }
                 finally {
-                    delete updatedFields.imageFile;
+                    // delete updatedFields.image;
                 }
             }
             else {
@@ -212,7 +214,7 @@ export const updateUser = async (req, res, next) => {
             //         }
             //         const command = new PutObjectCommand(params)
             //         await s3.send(command)
-            //         delete updatedFields.imageFile;
+            //         delete updatedFields.image;
             //     })
             //     .catch((err) => {
             //         console.error(err);

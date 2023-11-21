@@ -200,7 +200,8 @@ export const updateUser = async (
     let newImageUrl: string | null = null
 
 
-
+    // console.log({ 'req.params.id': req.params.id })
+    // console.log({ 'req.body': req.body })
     try {
         const userId = req.params.id;
 
@@ -216,14 +217,13 @@ export const updateUser = async (
         ];
 
         const updatedFields: Partial<UserT> | any = Object.keys(req.body).reduce((acc, key) => {
-
             if (!excludedFields.includes(key)) {
                 acc[key] = req.body[key];
             }
             return acc;
         }, {});
 
-        if (updatedFields.hasOwnProperty('imageFile')) {
+        if (updatedFields.hasOwnProperty('image')) {
             const s3 = new S3Client({
                 credentials: {
                     accessKeyId: s3BucketAccessKey,
@@ -232,11 +232,11 @@ export const updateUser = async (
                 region: s3BucketRegion
             });
 
-            const base64Image = updatedFields.imageFile.split(',')[1]; // Remove data:image/jpeg;base64, part
+            const base64Image = updatedFields.image.split(',')[1]; // Remove data:image/jpeg;base64, part
             const imageBuffer = Buffer.from(base64Image, 'base64');
 
             // Determine the file extension based on the content type (e.g., image/jpeg)
-            const contentType = req.body.imageFile.split(';')[0].split(':')[1];
+            const contentType = req.body.image.split(';')[0].split(':')[1];
 
             // Check if the image size is less than 100KB (100 * 1024 bytes)
             if (imageBuffer.length <= 100 * 1024) {
@@ -259,7 +259,7 @@ export const updateUser = async (
                 } catch (err) {
                     console.error('Error uploading image:', err);
                 } finally {
-                    delete updatedFields.imageFile;
+                    // delete updatedFields.image;
                 }
 
 
@@ -281,7 +281,7 @@ export const updateUser = async (
             //         const command = new PutObjectCommand(params)
             //         await s3.send(command)
 
-            //         delete updatedFields.imageFile;
+            //         delete updatedFields.image;
 
             //     })
             //     .catch((err) => {
