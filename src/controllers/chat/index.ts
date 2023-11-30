@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import sharp from 'sharp';
+// import jwt from 'jsonwebtoken';
+// import sharp from 'sharp';
 import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
@@ -9,6 +9,8 @@ import Chatroom from '../../models/chat/index.js';
 import UsersChats from '../../models/chat/users_chats.js';
 import { ChatroomT } from '../../types/chat.js';
 import { Op } from 'sequelize';
+import { parse } from 'cookie';
+
 
 
 // Get the directory name of the current module file
@@ -70,25 +72,42 @@ export const createChatroom = async (req: Request, res: Response, next: NextFunc
 export const getAllUserChatrooms = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
 
-    try {
-        const userChats = await UsersChats.findAll({
-            where: {
-                user_id: userId
-            }
-        });
+    const cookies = parse(req.headers.cookie || 'no cookie');
+    console.log({ cookies })
+    console.log({ refToken: cookies['speaky-refresh-token'] })
 
-        const chatIds = userChats.map((userChat: any) => userChat.chat_id);
+    // Access the 'token' cookie
+    // const token = cookies.token || 'no token';
+    const authHeader = req.headers['authorization'];
+    //@ts-ignore
+    console.log({ huId: req.userId })
+    //@ts-ignore
+    if (userId == req.userId) {
 
-        const chatrooms = await Chatroom.findAll({
-            where: {
-                id: chatIds
-            }
-        });
+        try {
+            const userChats = await UsersChats.findAll({
+                where: {
+                    user_id: userId
+                }
+            });
 
-        res.status(200).json(chatrooms);
-    } catch (error) {
-        res.status(400).json({
-            error: error.message
+            const chatIds = userChats.map((userChat: any) => userChat.chat_id);
+
+            const chatrooms = await Chatroom.findAll({
+                where: {
+                    id: chatIds
+                }
+            });
+
+            res.status(200).json(chatrooms);
+        } catch (error) {
+            res.status(400).json({
+                error: error.message
+            });
+        }
+    } else {
+        res.status(404).json({
+            error: "You are not authorized to complete this operation"
         });
     }
 }

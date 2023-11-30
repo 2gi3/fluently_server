@@ -66,7 +66,12 @@ DROP FOREIGN KEY FK_message_chat;
 ALTER TABLE messages
 ADD CONSTRAINT FK_message_chat FOREIGN KEY (chatId) REFERENCES chatrooms(id);
 
--- Cleaned up code
+CREATE TABLE refresh_tokens (
+    token varchar(350) NOT NULL,
+    PRIMARY KEY (token)
+);
+
+-- Database Cleaned up code
 -- Create the 'users' table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -112,6 +117,12 @@ CREATE TABLE IF NOT EXISTS users_chats (
     PRIMARY KEY (user_id, chat_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (chat_id) REFERENCES chatrooms(id)
+);
+
+-- Create the refresh_tokens table
+CREATE TABLE refresh_tokens (
+    token varchar(350) NOT NULL,
+    PRIMARY KEY (token)
 );
 
 -- Add columns and foreign keys to 'chatrooms' table

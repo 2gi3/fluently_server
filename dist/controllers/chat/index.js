@@ -4,6 +4,7 @@ import path from 'path';
 import Chatroom from '../../models/chat/index.js';
 import UsersChats from '../../models/chat/users_chats.js';
 import { Op } from 'sequelize';
+import { parse } from 'cookie';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,23 +56,39 @@ export const createChatroom = async (req, res, next) => {
 };
 export const getAllUserChatrooms = async (req, res, next) => {
     const userId = req.params.id;
-    try {
-        const userChats = await UsersChats.findAll({
-            where: {
-                user_id: userId
-            }
-        });
-        const chatIds = userChats.map((userChat) => userChat.chat_id);
-        const chatrooms = await Chatroom.findAll({
-            where: {
-                id: chatIds
-            }
-        });
-        res.status(200).json(chatrooms);
+    const cookies = parse(req.headers.cookie || 'no cookie');
+    console.log({ cookies });
+    console.log({ refToken: cookies['speaky-refresh-token'] });
+    // Access the 'token' cookie
+    // const token = cookies.token || 'no token';
+    const authHeader = req.headers['authorization'];
+    //@ts-ignore
+    console.log({ huId: req.userId });
+    //@ts-ignore
+    if (userId == req.userId) {
+        try {
+            const userChats = await UsersChats.findAll({
+                where: {
+                    user_id: userId
+                }
+            });
+            const chatIds = userChats.map((userChat) => userChat.chat_id);
+            const chatrooms = await Chatroom.findAll({
+                where: {
+                    id: chatIds
+                }
+            });
+            res.status(200).json(chatrooms);
+        }
+        catch (error) {
+            res.status(400).json({
+                error: error.message
+            });
+        }
     }
-    catch (error) {
-        res.status(400).json({
-            error: error.message
+    else {
+        res.status(404).json({
+            error: "You are not authorized to complete this operation"
         });
     }
 };

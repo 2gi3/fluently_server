@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes, Model } from "sequelize";
 import database from '../../../config/db.config.mjs';
-import { UserT } from "../../types/user.js";
+import { Gender, UserT } from "../../types/user.js";
 
 const sequelize = database;
 
@@ -17,7 +17,7 @@ class User extends Model<UserT> {
   public description!: string;
   public age!: number | null;
   public image!: string | null;
-  public gender!: string | null;
+  public gender!: Gender | null;
   public banned!: boolean | null;
   public status!: string | null;
 

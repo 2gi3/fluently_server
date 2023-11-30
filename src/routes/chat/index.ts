@@ -3,10 +3,11 @@ import { RequestHandler } from 'express';
 // import auth from '../middleware/auth';
 import { getAllUserChatrooms, createChatroom } from '../../controllers/chat/index.js';
 import { createMessage, getAllChatroomMessages, getLastChatroomMessage, updateMessageStatus } from '../../controllers/chat/message.js';
+import auth from '../../middleware/auth.js';
 
 const router: Router = express.Router();
 
-router.get('/:id', getAllUserChatrooms as RequestHandler);
+router.get('/:id', auth, getAllUserChatrooms as RequestHandler);
 router.post('/', createChatroom as RequestHandler);
 router.post('/message', createMessage as RequestHandler);
 router.get('/message/:chatId', getAllChatroomMessages as RequestHandler);

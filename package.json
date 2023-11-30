@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsc -w",
     "start": "node dist/server",
-    "dev": "concurrently \"npm run build\" \"npm run start\""
+    "dev": "concurrently \"nodemon dist/server\" \"npm run build\""
   },
   "keywords": [],
   "author": "",

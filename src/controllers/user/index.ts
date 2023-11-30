@@ -9,6 +9,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import RefreshToken from '../../models/auth/index.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,11 @@ const s3BucketName = process.env.BUCKET_NAME
 const s3BucketRegion = process.env.BUCKET_REGION
 const s3BucketAccessKey = process.env.IAM_ACCESS_KEY
 const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY
+
+
+export const generateAccessToken = (user: any, expiresIn: string | number = '25h') => {
+    return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
+};
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -50,16 +56,15 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
         const createdUser: any = await user.save();
 
-        const token = jwt.sign(
-            { id: createdUser.id },
-            process.env.JWT_SECRET || 'your-secret-key',
-            { expiresIn: '24h' }
-        );
+        const token = generateAccessToken(createdUser)
+        const refreshToken = jwt.sign({ id: createdUser.id }, process.env.REFRESH_TOKEN_SECRET);
+        await RefreshToken.create({ token: refreshToken });
 
-        res.cookie('token', token, {
+
+        res.setHeader('Authorization', 'Bearer ' + token);
+        res.cookie('speaky-refresh-token', refreshToken, {
             httpOnly: true,
             secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
-            maxAge: 24 * 60 * 60 * 1000,
         });
 
         res.status(201).json({
@@ -90,18 +95,20 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
                 });
             } else {
 
-                const token = jwt.sign(
-                    { id: user.id },
-                    process.env.JWT_SECRET || 'your-secret-key',
-                    { expiresIn: '24h' }
-                );
+                const token = generateAccessToken(user)
+                const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
+                await RefreshToken.create({ token: refreshToken });
 
-                // res.setHeader('Authorization', 'Bearer ' + token);
-                res.cookie('token', token, {
+                res.setHeader('Authorization', 'Bearer ' + token);
+                res.cookie('speaky-refresh-token', refreshToken, {
                     httpOnly: true,
                     secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
-                    maxAge: 24 * 60 * 60 * 1000,
                 });
+                // res.cookie('speaky-access-token', token, {
+                //     httpOnly: true,
+                //     secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+                //     maxAge: 60 * 1000, // 1 minute
+                // });
                 res.status(200).json({
                     id: user.id,
                     name: user.name,
