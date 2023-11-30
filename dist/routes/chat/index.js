@@ -5,10 +5,10 @@ import { createMessage, getAllChatroomMessages, getLastChatroomMessage, updateMe
 import auth from '../../middleware/auth.js';
 const router = express.Router();
 router.get('/:id', auth, getAllUserChatrooms);
-router.post('/', createChatroom);
-router.post('/message', createMessage);
-router.get('/message/:chatId', getAllChatroomMessages);
-router.get('/last_message/:chatId', getLastChatroomMessage);
-router.patch('/message/:messageId', updateMessageStatus);
+router.post('/', auth, createChatroom);
+router.post('/message', auth, createMessage);
+router.get('/message/:chatId', auth, getAllChatroomMessages);
+router.get('/last_message/:chatId', auth, getLastChatroomMessage);
+router.patch('/message/:messageId', auth, updateMessageStatus);
 export default router;
 //# sourceMappingURL=index.js.map

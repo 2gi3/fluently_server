@@ -1,26 +1,33 @@
 import jwt from 'jsonwebtoken';
 const auth = (req, res, next) => {
+    // if (!req || !req.headers) {
+    //     return res.status(400).json({
+    //         error: 'Bad Request: Missing or invalid headers in the request.',
+    //     });
+    // }
+    console.log(req.headers);
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    if (!authHeader) {
+        return res.status(401).json({
+            error: 'Unauthorized: No Authorization header provided.',
+        });
+    }
+    const token = authHeader.split(' ')[1];
     if (!token) {
-        res.status(401).json({
+        return res.status(401).json({
             error: 'Unauthorized: No token provided.',
         });
     }
-    else {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) {
-                res.status(403).json({
-                    err,
-                    message: 'Unauthorized: Invalid token.',
-                });
-            }
-            else {
-                req.userId = user.id;
-                next();
-            }
-        });
-    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({
+                err,
+                message: 'Unauthorized: Invalid token.',
+            });
+        }
+        req.userId = user.id;
+        next();
+    });
 };
 export default auth;
 //# sourceMappingURL=auth.js.map

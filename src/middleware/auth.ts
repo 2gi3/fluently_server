@@ -5,27 +5,39 @@ import { UserT } from '../types/user.js';
 
 
 
-const auth: any = (req: CustomRequest, res: Response, next: NextFunction): void => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]
-
-    if (!token) {
-        res.status(401).json({
-            error: 'Unauthorized: No token provided.',
-        });
-    } else {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: UserT) => {
-            if (err) {
-                res.status(403).json({
-                    err,
-                    message: 'Unauthorized: Invalid token.',
-                });
-            } else {
-                req.userId = user.id;
-                next();
-            }
+const auth: any = (req: CustomRequest, res: Response, next: NextFunction): Response<any, Record<string, any>> | void => {
+    // if (!req || !req.headers) {
+    //     return res.status(400).json({
+    //         error: 'Bad Request: Missing or invalid headers in the request.',
+    //     });
+    // }
+    console.log(req.headers)
+    const authHeader = req.headers['authorization']
+    if (!authHeader) {
+        return res.status(401).json({
+            error: 'Unauthorized: No Authorization header provided.',
         });
     }
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({
+            error: 'Unauthorized: No token provided.',
+        });
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: UserT) => {
+        if (err) {
+            return res.status(403).json({
+                err,
+                message: 'Unauthorized: Invalid token.',
+            });
+        }
+
+        req.userId = user.id;
+        next();
+    });
 };
 
 export default auth;
+
