@@ -26,10 +26,10 @@ const auth: any = (req: CustomRequest, res: Response, next: NextFunction): Respo
         });
     }
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: UserT) => {
-        if (err) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error: any, user: UserT) => {
+        if (error) {
             return res.status(403).json({
-                err,
+                error,
                 message: 'Unauthorized: Invalid token.',
             });
         }

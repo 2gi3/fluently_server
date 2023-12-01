@@ -52,4 +52,28 @@ export const createAccessToken = async (req, res, next) => {
         return res.status(500).json({ error, message: 'Internal server error' });
     }
 };
+export const deleteRefreshToken = async (req, res, next) => {
+    const cookies = parse(req.headers.cookie || '');
+    const refreshToken = cookies['speaky-refresh-token'];
+    if (!refreshToken) {
+        return res.status(401).json({ message: 'Refresh token not provided' });
+    }
+    try {
+        const deletedToken = await RefreshToken.destroy({
+            where: {
+                token: refreshToken
+            }
+        });
+        if (!deletedToken) {
+            return res.status(403).json({ message: 'Invalid refresh token' });
+        }
+        return res.status(200).json({
+            message: 'Refresh token deleted successfully!'
+        });
+    }
+    catch (error) {
+        console.error('Error deleting token from the database:', error);
+        return res.status(500).json({ error, message: 'Internal server error' });
+    }
+};
 //# sourceMappingURL=index.js.map

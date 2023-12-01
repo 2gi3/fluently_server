@@ -18,10 +18,10 @@ const auth = (req, res, next) => {
             error: 'Unauthorized: No token provided.',
         });
     }
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
+        if (error) {
             return res.status(403).json({
-                err,
+                error,
                 message: 'Unauthorized: Invalid token.',
             });
         }
