@@ -109,18 +109,22 @@ export const login = async (req, res, next) => {
     // }
 };
 export const deleteUser = async (req, res, next) => {
-    console.log(req.params.id);
-    User.findOne({ where: { id: req.params.id } }).then((user) => {
-        user.destroy().then(() => {
-            res.status(200).json({
-                message: 'Your account was deleted!'
-            });
-        }).catch((error) => {
-            res.status(400).json({
-                error: error
+    if (req.params.id != req.userId) {
+        res.status(403).json({ message: 'You are not authorised to delete this user' });
+    }
+    else {
+        User.findOne({ where: { id: req.params.id } }).then((user) => {
+            user.destroy().then(() => {
+                res.status(200).json({
+                    message: 'Your account was deleted!'
+                });
+            }).catch((error) => {
+                res.status(400).json({
+                    error: error
+                });
             });
         });
-    });
+    }
 };
 export const getAllUsers = async (req, res, next) => {
     User.findAll(
@@ -156,115 +160,120 @@ export const updateUser = async (req, res, next) => {
     let newImageUrl = null;
     // console.log({ 'req.params.id': req.params.id })
     // console.log({ 'req.body': req.body })
-    try {
-        const userId = req.params.id;
-        // These fields should not be updated
-        const excludedFields = [
-            'nationality',
-            'country',
-            'native_language',
-            'teaching_language',
-            'learning_language',
-            'gender',
-            'age',
-        ];
-        const updatedFields = Object.keys(req.body).reduce((acc, key) => {
-            if (!excludedFields.includes(key)) {
-                acc[key] = req.body[key];
-            }
-            return acc;
-        }, {});
-        if (updatedFields.hasOwnProperty('image')) {
-            const s3 = new S3Client({
-                credentials: {
-                    accessKeyId: s3BucketAccessKey,
-                    secretAccessKey: s3BucketSecretAccessKey
-                },
-                region: s3BucketRegion
-            });
-            const base64Image = updatedFields.image.split(',')[1]; // Remove data:image/jpeg;base64, part
-            const imageBuffer = Buffer.from(base64Image, 'base64');
-            // Determine the file extension based on the content type (e.g., image/jpeg)
-            const contentType = req.body.image.split(';')[0].split(':')[1];
-            // Check if the image size is less than 100KB (100 * 1024 bytes)
-            if (imageBuffer.length <= 100 * 1024) {
-                const imageName = `ProfileImage-${userId}-${Date.now()}`;
-                const params = {
-                    ACL: "public-read",
-                    Bucket: s3BucketName,
-                    Key: imageName,
-                    Body: imageBuffer,
-                    ContentType: contentType
-                };
-                const command = new PutObjectCommand(params);
-                try {
-                    await s3.send(command);
-                    newImageUrl = `https://${s3BucketName}.s3.${s3BucketRegion}.amazonaws.com/${imageName}`;
-                    responseMesage = 'User image updated';
-                    updatedFields['image'] = newImageUrl;
-                }
-                catch (err) {
-                    console.error('Error uploading image:', err);
-                }
-                finally {
-                    // delete updatedFields.image;
-                }
-            }
-            else {
-                console.error('Image size exceeds 100KB. Image not uploaded.');
-            }
-            // await sharp(imageBuffer)
-            //     .resize(150, 150)
-            //     .webp()
-            //     // .jpeg()
-            //     .toBuffer()
-            //     .then(async (resizedWebPImageBuffer) => {
-            //         const params = {
-            //             Bucket: s3BucketName,
-            //             Key: `ProfileImage-${userId}-${Date.now()}`,
-            //             body: resizedWebPImageBuffer
-            //         }
-            //         const command = new PutObjectCommand(params)
-            //         await s3.send(command)
-            //         delete updatedFields.image;
-            //     })
-            //     .catch((err) => {
-            //         console.error(err);
-            //     });
-        }
-        const [affectedRows] = await User.update(updatedFields, {
-            where: { id: userId },
-        });
-        if (affectedRows === 1) {
-            const updatedUser = await User.findOne({ where: { id: userId } });
-            if (!responseMesage || !newImageUrl) {
-                res.status(200).json({
-                    message: 'User information updated successfully!',
-                    updatedUser: updatedUser
-                });
-            }
-            else {
-                res.status(200).json({
-                    message: responseMesage,
-                    image: newImageUrl
-                });
-            }
-        }
-        else {
-            if (!responseMesage) {
-                res.status(404).json({
-                    error: 'User not found or no fields to update.',
-                });
-            }
-            else {
-                console.log('image updated');
-            }
-        }
+    if (req.params.id != req.userId) {
+        res.status(403).json({ message: 'You are not authorised to update this user' });
     }
-    catch (error) {
-        res.status(500).json({
-            error: error.message,
-        });
+    else {
+        try {
+            const userId = req.params.id;
+            // These fields should not be updated
+            const excludedFields = [
+                'nationality',
+                'country',
+                'native_language',
+                'teaching_language',
+                'learning_language',
+                'gender',
+                'age',
+            ];
+            const updatedFields = Object.keys(req.body).reduce((acc, key) => {
+                if (!excludedFields.includes(key)) {
+                    acc[key] = req.body[key];
+                }
+                return acc;
+            }, {});
+            if (updatedFields.hasOwnProperty('image')) {
+                const s3 = new S3Client({
+                    credentials: {
+                        accessKeyId: s3BucketAccessKey,
+                        secretAccessKey: s3BucketSecretAccessKey
+                    },
+                    region: s3BucketRegion
+                });
+                const base64Image = updatedFields.image.split(',')[1]; // Remove data:image/jpeg;base64, part
+                const imageBuffer = Buffer.from(base64Image, 'base64');
+                // Determine the file extension based on the content type (e.g., image/jpeg)
+                const contentType = req.body.image.split(';')[0].split(':')[1];
+                // Check if the image size is less than 100KB (100 * 1024 bytes)
+                if (imageBuffer.length <= 100 * 1024) {
+                    const imageName = `ProfileImage-${userId}-${Date.now()}`;
+                    const params = {
+                        ACL: "public-read",
+                        Bucket: s3BucketName,
+                        Key: imageName,
+                        Body: imageBuffer,
+                        ContentType: contentType
+                    };
+                    const command = new PutObjectCommand(params);
+                    try {
+                        await s3.send(command);
+                        newImageUrl = `https://${s3BucketName}.s3.${s3BucketRegion}.amazonaws.com/${imageName}`;
+                        responseMesage = 'User image updated';
+                        updatedFields['image'] = newImageUrl;
+                    }
+                    catch (err) {
+                        console.error('Error uploading image:', err);
+                    }
+                    finally {
+                        // delete updatedFields.image;
+                    }
+                }
+                else {
+                    console.error('Image size exceeds 100KB. Image not uploaded.');
+                }
+                // await sharp(imageBuffer)
+                //     .resize(150, 150)
+                //     .webp()
+                //     // .jpeg()
+                //     .toBuffer()
+                //     .then(async (resizedWebPImageBuffer) => {
+                //         const params = {
+                //             Bucket: s3BucketName,
+                //             Key: `ProfileImage-${userId}-${Date.now()}`,
+                //             body: resizedWebPImageBuffer
+                //         }
+                //         const command = new PutObjectCommand(params)
+                //         await s3.send(command)
+                //         delete updatedFields.image;
+                //     })
+                //     .catch((err) => {
+                //         console.error(err);
+                //     });
+            }
+            const [affectedRows] = await User.update(updatedFields, {
+                where: { id: userId },
+            });
+            if (affectedRows === 1) {
+                const updatedUser = await User.findOne({ where: { id: userId } });
+                if (!responseMesage || !newImageUrl) {
+                    res.status(200).json({
+                        message: 'User information updated successfully!',
+                        updatedUser: updatedUser
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        message: responseMesage,
+                        image: newImageUrl
+                    });
+                }
+            }
+            else {
+                if (!responseMesage) {
+                    res.status(404).json({
+                        error: 'User not found or no fields to update.',
+                    });
+                }
+                else {
+                    console.log('image updated');
+                }
+            }
+        }
+        catch (error) {
+            res.status(500).json({
+                error: error.message,
+            });
+        }
     }
 };
 //# sourceMappingURL=index.js.map

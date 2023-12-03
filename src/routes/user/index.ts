@@ -8,7 +8,6 @@ const router: Router = express.Router();
 
 router.post('/signup', signup as RequestHandler);
 router.post('/login', login as RequestHandler);
-// router.delete('/:id', auth as RequestHandler, userCtrl.deleteUser as RequestHandler);
 router.delete('/:id', auth, deleteUser as RequestHandler);
 router.patch('/:id', auth, updateUser as RequestHandler);
 router.get('/', auth, getAllUsers as RequestHandler);

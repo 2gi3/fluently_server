@@ -2,10 +2,118 @@ Node version: 20.5.1.
 
 This is an Express.js API designed for: [fluently_client](https://github.com/2gi3/fluently_client)
 
-## Environment variables
--  DB
--  USER
--  PWD
+## Run project 
+Make sure to create all the [Environment variables](#environment-variables)
+, you can find them in .env.example or at 
+
+### Development mode
+- ```npm run dev```
+  This script watches for any change saved in /src (typescript), when a change is detected it will compile the the javascript code in /dist and then it will run nodemon /dist/server.
+
+### Local production mode 
+- ```npm run build```
+  This will compile the typescript code to javascript
+- ```npm start```
+  This will start the server
+
+
+### Remote production deployment ()
+Install pm2 then:
+- ```npm run build```
+  This will compile the typescript code to javascript
+- ```pm2 start dist/server```
+  This will start the server and keep it running when the console is closed
+
+  -  #### Stop production server  
+     ```pm2 stop dist/server```
+
+  -  #### Check production server status
+     - ```pm2 status```  
+     or
+     - ```pm2 list```
+
+
+## <h2 id="environment-variables">Environment variables</h2>
+- ### Database
+  -  DB=< database-name >
+  -  DATABASE_USER=
+  -  DATABASE_PWD=
+  -  DATABASE_HOST=
+
+- ### AWS S3 Bucket
+  -  BUCKET_NAME=
+  -  BUCKET_REGION=< example: 'eu-west-2' >
+  -  IAM_ACCESS_KEY=
+  -  IAM_SECRET_ACCESS_KEY=
+
+- ### Authentication
+  -  ACCESS_TOKEN_SECRET=< any string >
+  -  REFRESH_TOKEN_SECRET=< any string >
+
+
+## <h2 id="authentication-authorization">Authentication & Authorization</h2>
+
+### JSON Web Tokens (JWT)
+When a user signs up or logs in, 2 Tokens are created:
+- Access token 
+  - Used to authenticate and authorize the user in the middleware auth function
+  -  Hes an expiration time
+  -  Is set in the headers as follows:
+    ```      
+    res.setHeader('Authorization', 'Bearer ' + token);
+    ```
+- Refresh token
+  - Used to create a new access token when the available one is expired
+  - Has no expiration time
+  - Is saved in the database
+  - Is also saved in the client's cookies as follows
+  ```
+  res.cookie('speaky-refresh-token', refreshToken, {
+            httpOnly: true,
+            secure: true,
+        });
+  ```     
+#### Ways to renew an expired access tokens
+- If the user hasn't logged out and the refresh token is still in the cookies
+  - Make a GET request to .../api/auth/token
+  - Make any request at all and the auth middleware will renew the expired access token
+
+
+## Middleware 
+
+### auth function
+This function does the following actions:
+- Decodes the JSON web token (JWT), than takes the user id contained in the token and saves it in the CustomRequest as follows ```req.userId = < ID CONTAINED IN THE JWT >```, 
+- If the access token is valid it calls next() and the code keeps running to the next function in the route
+- If the access token is expired but the refresh token is still in the cookies and is also still saved in the database, then it will refresh the access token and perform the 2 actions above.
+
+#### Examples
+- Allow access to anyone:
+     ```
+     router.post('/login', login as RequestHandler);
+     ```
+
+- Allow access only to authenticated users:
+     ```
+     router.get('/', auth, getAllUsers as RequestHandler);
+     ```
+
+
+- Allow only one specific user to erform an action
+
+  -   ```
+      router.delete('/:id', auth, deleteUser as RequestHandler);
+      ```
+  -  deleteUser function 
+
+      ```
+      if (req.params.id === req.userId) {
+      Only in this case the account can be deleted,       because the  id in the JWT is the same  as the one       in the uri parameter
+      }
+      ```
+
+
+
 
 ## Database
 MySQL database deployed on AWS RDS
@@ -13,12 +121,6 @@ to connect a terminal to the database:
 - cd C:\Program Files\MySQL\MySQL Server 8.1\bin
 - `mysql.exe -h <YOUR HOST HERE> -P 3306 -u admin -p`
 - Enter password
-
-## Run server
-run build, then:
-start server: pm2 start dist/server
-stop server: pm2 stop dist/server
-check status: pm2 status | pm2 list
 
 
 ### ssh certificate 
