@@ -81,7 +81,21 @@ When a user signs up or logs in, 2 Tokens are created:
 
 ## Middleware 
 
-### auth function
+### rateLimiter
+
+This file export 3 different rate limiters
+
+- lowLimiter
+  This is the strictest limiter, used for sensitive routes (i.e., login, signup)
+
+- mediumLimiter
+  Used for most routes
+
+- highLimiter
+  Used for routes where a high number of requests may be expected.
+
+
+### auth
 This function does the following actions:
 - Decodes the JSON web token (JWT), than takes the user id contained in the token and saves it in the CustomRequest as follows ```req.userId = < ID CONTAINED IN THE JWT >```, 
 - If the access token is valid it calls next() and the code keeps running to the next function in the route
