@@ -276,4 +276,19 @@ export const updateUser = async (req, res, next) => {
         }
     }
 };
+export const checkUserExistence = async (req, res, next) => {
+    console.log({ email: req.params.email });
+    try {
+        const user = await User.findOne({ where: { email: req.params.email } });
+        if (user) {
+            res.status(200).json({ exists: true });
+        }
+        else {
+            res.status(200).json({ exists: false });
+        }
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 //# sourceMappingURL=index.js.map
