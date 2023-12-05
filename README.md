@@ -50,6 +50,11 @@ Install pm2 then:
   -  ACCESS_TOKEN_SECRET=< any string >
   -  REFRESH_TOKEN_SECRET=< any string >
 
+- ### CORS
+  - ALLOWED_ORIGIN=< example: http://localhost:8081 > 
+
+
+
 
 ## <h2 id="authentication-authorization">Authentication & Authorization</h2>
 
@@ -58,21 +63,14 @@ When a user signs up or logs in, 2 Tokens are created:
 - Access token 
   - Used to authenticate and authorize the user in the middleware auth function
   -  Hes an expiration time
-  -  Is set in the headers as follows:
-    ```      
-    res.setHeader('Authorization', 'Bearer ' + token);
-    ```
+  -  Is saved in the client's cookies as `speaky-access-token`
+    
 - Refresh token
   - Used to create a new access token when the available one is expired
   - Has no expiration time
   - Is saved in the database
-  - Is also saved in the client's cookies as follows
-  ```
-  res.cookie('speaky-refresh-token', refreshToken, {
-            httpOnly: true,
-            secure: true,
-        });
-  ```     
+  - Is also saved in the client's cookies as `speaky-access-token`   
+  
 #### Ways to renew an expired access tokens
 - If the user hasn't logged out and the refresh token is still in the cookies
   - Make a GET request to .../api/auth/token

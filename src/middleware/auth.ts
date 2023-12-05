@@ -8,36 +8,27 @@ import User from '../models/user/index.js';
 import { generateAccessToken } from '../controllers/user/index.js';
 
 
-
 const auth: any = (req: CustomRequest, res: Response, next: NextFunction): Response<any, Record<string, any>> | void => {
+    const cookies = parse(req.headers.cookie || '');
 
-    const authHeader = req.headers['authorization']
+    const accessToken = cookies['speaky-access-token']
 
-    if (!authHeader) {
+    if (!accessToken) {
         return res.status(401).json({
-            error: 'Unauthorized: No Authorization header provided.',
+            error: 'Unauthorized: No access token provided.',
         });
     }
 
-    const token = authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({
-            error: 'Unauthorized: No token provided.',
-        });
-    }
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (error: any, user: UserT) => {
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (error: any, user: UserT) => {
+        console.log('secret', process.env.ACCESS_TOKEN_SECRET)
+        console.log('Access Token:', accessToken);
         if (error) {
-            console.log('error msg:' + error.message)
+            console.log('error msg-ALK:' + error.message)
             if (error.message === "jwt expired") {
-                const cookies = parse(req.headers.cookie || '');
-                console.log({ cookies })
-                console.log({ refToken: cookies['speaky-refresh-token'] })
                 const refreshToken = cookies['speaky-refresh-token']
 
                 if (!refreshToken) {
-                    return res.status(401).json({ message: 'Access token is expired and there is no refresh token in the cookies, Try logging out and logging in again' });
+                    return res.status(401).json({ message: 'Access token is expired and there is no valid refresh token in the cookies, Try logging out and logging in again' });
                 }
                 try {
 
@@ -57,17 +48,19 @@ const auth: any = (req: CustomRequest, res: Response, next: NextFunction): Respo
                         }
 
                         const userId = decoded.id;
-                        console.log({ decodedId: decoded.id })
                         const user = await User.findOne({ where: { id: userId } });
 
                         if (!user) {
-                            console.log('User not found.');
                             return res.status(403).json({ message: 'Expired access token and User not found when trying to generate new access token' });
                         }
 
                         const accessToken = generateAccessToken(user);
-                        res.setHeader('Authorization', 'Bearer ' + accessToken);
-                        console.log({ user })
+                        res.cookie('speaky-access-token', accessToken, {
+                            httpOnly: false,
+                            secure: process.env.NODE_ENV === 'production', // Should be true for production
+                            sameSite: 'lax', // Required for cross-origin cookies
+                            domain: 'localhost',
+                        });
                         req.userId = decoded.id;
                         next();
 
@@ -87,7 +80,6 @@ const auth: any = (req: CustomRequest, res: Response, next: NextFunction): Respo
                 });
             }
         } else {
-            console.log({ helloUser: user })
             req.userId = user.id;
             next();
         }

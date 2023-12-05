@@ -57,8 +57,6 @@ export const createChatroom = async (req, res, next) => {
 export const getAllUserChatrooms = async (req, res, next) => {
     const userId = req.params.id;
     const cookies = parse(req.headers.cookie || 'no cookie');
-    console.log({ cookies });
-    console.log({ refToken: cookies['speaky-refresh-token'] });
     // Access the 'token' cookie
     // const token = cookies.token || 'no token';
     const authHeader = req.headers['authorization'];

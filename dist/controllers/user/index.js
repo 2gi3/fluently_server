@@ -20,8 +20,14 @@ export const generateAccessToken = (user, expiresIn = '25h') => {
     return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
 };
 export const signup = async (req, res, next) => {
+    const { email, password, name, nationality, country, native_language, teaching_language, learning_language, } = req.body;
+    const userDB = await User.findOne({ where: { email: email } });
+    if (userDB) {
+        return res.status(409).json({
+            message: 'This account already exists, please Log In',
+        });
+    }
     try {
-        const { email, password, name, nationality, country, native_language, teaching_language, learning_language, } = req.body;
         const hash = await bcrypt.hash(password, 10);
         const user = new NewUser({
             email,
@@ -37,10 +43,17 @@ export const signup = async (req, res, next) => {
         const token = generateAccessToken(createdUser);
         const refreshToken = jwt.sign({ id: createdUser.id }, process.env.REFRESH_TOKEN_SECRET);
         await RefreshToken.create({ token: refreshToken });
-        res.setHeader('Authorization', 'Bearer ' + token);
+        res.cookie('speaky-access-token', token, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            domain: 'localhost',
+        });
         res.cookie('speaky-refresh-token', refreshToken, {
-            httpOnly: true,
-            secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            domain: 'localhost',
         });
         res.status(201).json({
             message: 'New user added successfully!',
@@ -72,16 +85,18 @@ export const login = async (req, res, next) => {
                 const token = generateAccessToken(user);
                 const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
                 await RefreshToken.create({ token: refreshToken });
-                res.setHeader('Authorization', 'Bearer ' + token);
-                res.cookie('speaky-refresh-token', refreshToken, {
-                    httpOnly: true,
-                    secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+                res.cookie('speaky-access-token', token, {
+                    httpOnly: false,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    domain: 'localhost',
                 });
-                // res.cookie('speaky-access-token', token, {
-                //     httpOnly: true,
-                //     secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
-                //     maxAge: 60 * 1000, // 1 minute
-                // });
+                res.cookie('speaky-refresh-token', refreshToken, {
+                    httpOnly: false,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    domain: 'localhost',
+                });
                 res.status(200).json({
                     id: user.id,
                     name: user.name,

@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import RefreshToken from '../../models/auth/index.js';
 import { CustomRequest } from '../../types/index.js';
+import cookie from 'cookie'
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,18 +30,23 @@ export const generateAccessToken = (user: any, expiresIn: string | number = '25h
 };
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
-
+    const {
+        email,
+        password,
+        name,
+        nationality,
+        country,
+        native_language,
+        teaching_language,
+        learning_language,
+    } = req.body;
+    const userDB = await User.findOne({ where: { email: email } });
+    if (userDB) {
+        return res.status(409).json({
+            message: 'This account already exists, please Log In',
+        });
+    }
     try {
-        const {
-            email,
-            password,
-            name,
-            nationality,
-            country,
-            native_language,
-            teaching_language,
-            learning_language,
-        } = req.body;
 
         const hash = await bcrypt.hash(password, 10);
 
@@ -62,10 +68,16 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         await RefreshToken.create({ token: refreshToken });
 
 
-        res.setHeader('Authorization', 'Bearer ' + token);
-        res.cookie('speaky-refresh-token', refreshToken, {
-            httpOnly: true,
-            secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+        res.cookie('speaky-access-token', token, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production', // Should be true for production
+            sameSite: 'lax', // Required for cross-origin cookies
+            domain: 'localhost',
+        }); res.cookie('speaky-refresh-token', refreshToken, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production', // Should be true for production
+            sameSite: 'lax', // Required for cross-origin cookies
+            domain: 'localhost',
         });
 
         res.status(201).json({
@@ -100,16 +112,19 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
                 const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
                 await RefreshToken.create({ token: refreshToken });
 
-                res.setHeader('Authorization', 'Bearer ' + token);
-                res.cookie('speaky-refresh-token', refreshToken, {
-                    httpOnly: true,
-                    secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
+                res.cookie('speaky-access-token', token, {
+                    httpOnly: false,
+                    secure: process.env.NODE_ENV === 'production', // Should be true for production
+                    sameSite: 'lax', // Required for cross-origin cookies
+                    domain: 'localhost',
                 });
-                // res.cookie('speaky-access-token', token, {
-                //     httpOnly: true,
-                //     secure: false, // !!!MUST BE TRUE FOR PRODUCTION!!!
-                //     maxAge: 60 * 1000, // 1 minute
-                // });
+                res.cookie('speaky-refresh-token', refreshToken, {
+                    httpOnly: false,
+                    secure: process.env.NODE_ENV === 'production', // Should be true for production
+                    sameSite: 'lax', // Required for cross-origin cookies
+                    domain: 'localhost',
+                });
+
                 res.status(200).json({
                     id: user.id,
                     name: user.name,

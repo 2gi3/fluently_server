@@ -73,8 +73,6 @@ export const getAllUserChatrooms = async (req: Request, res: Response, next: Nex
     const userId = req.params.id;
 
     const cookies = parse(req.headers.cookie || 'no cookie');
-    console.log({ cookies })
-    console.log({ refToken: cookies['speaky-refresh-token'] })
 
     // Access the 'token' cookie
     // const token = cookies.token || 'no token';

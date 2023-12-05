@@ -14,7 +14,6 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 export const createAccessToken = async (req, res, next) => {
     const cookies = parse(req.headers.cookie || '');
     console.log({ cookies });
-    console.log({ refToken: cookies['speaky-refresh-token'] });
     const refreshToken = cookies['speaky-refresh-token'];
     if (!refreshToken) {
         return res.status(401).json({ message: 'Refresh token not provided' });
@@ -41,7 +40,12 @@ export const createAccessToken = async (req, res, next) => {
                 return res.status(403).json({ message: 'User not found' });
             }
             const accessToken = generateAccessToken(user);
-            res.setHeader('Authorization', 'Bearer ' + accessToken);
+            res.cookie('speaky-access-token', accessToken, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                domain: 'localhost',
+            });
             return res.status(200).json({
                 message: 'New access token created successfully!'
             });

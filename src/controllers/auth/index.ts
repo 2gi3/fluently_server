@@ -20,7 +20,6 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 export const createAccessToken = async (req: Request, res: Response, next: NextFunction) => {
     const cookies = parse(req.headers.cookie || '');
     console.log({ cookies })
-    console.log({ refToken: cookies['speaky-refresh-token'] })
     const refreshToken = cookies['speaky-refresh-token']
 
     if (!refreshToken) {
@@ -54,7 +53,12 @@ export const createAccessToken = async (req: Request, res: Response, next: NextF
             }
 
             const accessToken = generateAccessToken(user);
-            res.setHeader('Authorization', 'Bearer ' + accessToken);
+            res.cookie('speaky-access-token', accessToken, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === 'production', // Should be true for production
+                sameSite: 'lax', // Required for cross-origin cookies
+                domain: 'localhost',
+            });
 
             return res.status(200).json({
                 message: 'New access token created successfully!'
