@@ -18,13 +18,14 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 export const createAccessToken = async (req: Request, res: Response, next: NextFunction) => {
-    const cookies = parse(req.headers.cookie || '');
-    console.log({ cookies })
-    const refreshToken = cookies['speaky-refresh-token']
+    // const cookies = parse(req.headers.cookie || '');
+    // const refreshToken = cookies['speaky-refresh-token']
+    const refreshToken = req.params.token
 
-    if (!refreshToken) {
-        return res.status(401).json({ message: 'Refresh token not provided' });
-    }
+
+    // if (!refreshToken) {
+    //     return res.status(401).json({ message: 'Refresh token not provided' });
+    // }
 
     try {
         const refreshTokenDB = await RefreshToken.findOne({
@@ -53,12 +54,13 @@ export const createAccessToken = async (req: Request, res: Response, next: NextF
             }
 
             const accessToken = generateAccessToken(user);
-            res.cookie('speaky-access-token', accessToken, {
-                httpOnly: false,
-                secure: process.env.NODE_ENV === 'production', // Should be true for production
-                sameSite: 'lax', // Required for cross-origin cookies
-                domain: 'localhost',
-            });
+            res.setHeader('Authorization', `Bearer ${accessToken}`);
+            // res.cookie('speaky-access-token', accessToken, {
+            //     httpOnly: false,
+            //     secure: process.env.NODE_ENV === 'production', // Should be true for production
+            //     sameSite: 'lax', // Required for cross-origin cookies
+            //     domain: 'localhost',
+            // });
 
             return res.status(200).json({
                 message: 'New access token created successfully!'
@@ -71,8 +73,9 @@ export const createAccessToken = async (req: Request, res: Response, next: NextF
 }
 
 export const deleteRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
-    const cookies = parse(req.headers.cookie || '');
-    const refreshToken = cookies['speaky-refresh-token'];
+    // const cookies = parse(req.headers.cookie || '');
+    // const refreshToken = cookies['speaky-refresh-token'];
+    const refreshToken = req.params.token
 
     if (!refreshToken) {
         return res.status(401).json({ message: 'Refresh token not provided' });

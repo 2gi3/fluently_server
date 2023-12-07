@@ -4,7 +4,6 @@ import path from 'path';
 import Chatroom from '../../models/chat/index.js';
 import UsersChats from '../../models/chat/users_chats.js';
 import { Op } from 'sequelize';
-import { parse } from 'cookie';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +11,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const timestamp = new Date().getTime();
 export const createChatroom = async (req, res, next) => {
+    console.log('qwerty1230a9');
     try {
         const { user1Id, user2Id } = req.body;
         const existingChatroom = await Chatroom.findOne({
@@ -56,13 +56,6 @@ export const createChatroom = async (req, res, next) => {
 };
 export const getAllUserChatrooms = async (req, res, next) => {
     const userId = req.params.id;
-    const cookies = parse(req.headers.cookie || 'no cookie');
-    // Access the 'token' cookie
-    // const token = cookies.token || 'no token';
-    const authHeader = req.headers['authorization'];
-    //@ts-ignore
-    console.log({ huId: req.userId });
-    //@ts-ignore
     if (userId == req.userId) {
         try {
             const userChats = await UsersChats.findAll({

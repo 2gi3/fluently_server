@@ -1,7 +1,7 @@
 import { rateLimit } from 'express-rate-limit';
 export const lowLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
-    limit: 5,
+    limit: 9,
     standardHeaders: 'draft-6',
     legacyHeaders: false,
     message: 'Too many unsuccessful attempts, please try again later'

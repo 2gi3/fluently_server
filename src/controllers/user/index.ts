@@ -63,26 +63,29 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
         const createdUser: any = await user.save();
 
-        const token = generateAccessToken(createdUser)
+        const accessToken = generateAccessToken(createdUser)
         const refreshToken = jwt.sign({ id: createdUser.id }, process.env.REFRESH_TOKEN_SECRET);
         await RefreshToken.create({ token: refreshToken });
 
 
-        res.cookie('speaky-access-token', token, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === 'production', // Should be true for production
-            sameSite: 'lax', // Required for cross-origin cookies
-            domain: 'localhost',
-        }); res.cookie('speaky-refresh-token', refreshToken, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === 'production', // Should be true for production
-            sameSite: 'lax', // Required for cross-origin cookies
-            domain: 'localhost',
-        });
-
+        // res.cookie('speaky-access-token', accessToken, {
+        //     httpOnly: false,
+        //     secure: process.env.NODE_ENV === 'production', // Should be true for production
+        //     sameSite: 'none',
+        //     domain: 'localhost',
+        // });
+        // res.cookie('speaky-refresh-token', refreshToken, {
+        //     httpOnly: false,
+        //     secure: process.env.NODE_ENV === 'production', // Should be true for production
+        //     sameSite: 'none',
+        //     domain: 'localhost',
+        // });
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
         res.status(201).json({
             message: 'New user added successfully!',
-            user: createdUser
+            user: createdUser,
+            // accessToken,
+            refreshToken
         });
     } catch (error) {
         res.status(500).json({
@@ -108,37 +111,41 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
                 });
             } else {
 
-                const token = generateAccessToken(user)
+                const accessToken = generateAccessToken(user)
                 const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
                 await RefreshToken.create({ token: refreshToken });
 
-                res.cookie('speaky-access-token', token, {
-                    httpOnly: false,
-                    secure: process.env.NODE_ENV === 'production', // Should be true for production
-                    sameSite: 'lax', // Required for cross-origin cookies
-                    domain: 'localhost',
-                });
-                res.cookie('speaky-refresh-token', refreshToken, {
-                    httpOnly: false,
-                    secure: process.env.NODE_ENV === 'production', // Should be true for production
-                    sameSite: 'lax', // Required for cross-origin cookies
-                    domain: 'localhost',
-                });
-
+                // res.cookie('speaky-access-token', token, {
+                //     httpOnly: false,
+                //     secure: process.env.NODE_ENV === 'production', // Should be true for production
+                //     sameSite: 'none', // Required for cross-origin cookies
+                //     domain: 'localhost',
+                // });
+                // res.cookie('speaky-refresh-token', refreshToken, {
+                //     httpOnly: false,
+                //     secure: process.env.NODE_ENV === 'production', // Should be true for production
+                //     sameSite: 'lax', // Required for cross-origin cookies
+                //     domain: 'localhost',
+                // });
+                res.setHeader('Authorization', `Bearer ${accessToken}`);
                 res.status(200).json({
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    nationality: user.nationality,
-                    country: user.country,
-                    native_language: user.native_language,
-                    teaching_language: user.teaching_language,
-                    learning_language: user.learning_language,
-                    description: user.description,
-                    age: user.age || null,
-                    image: user.image || null,
-                    gender: user.gender || null,
-                    banned: user.banned || null,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        nationality: user.nationality,
+                        country: user.country,
+                        native_language: user.native_language,
+                        teaching_language: user.teaching_language,
+                        learning_language: user.learning_language,
+                        description: user.description,
+                        age: user.age || null,
+                        image: user.image || null,
+                        gender: user.gender || null,
+                        banned: user.banned || null,
+                    },
+                    // accessToken,
+                    refreshToken
                 });
 
             }
@@ -205,7 +212,6 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getOneUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    // console.log(req.params.id)
     try {
         const user = await User.findOne({ where: { id: req.params.id } });
 
@@ -224,8 +230,6 @@ export const updateUser = async (req: CustomRequest, res: Response, next: NextFu
     let newImageUrl: string | null = null
 
 
-    // console.log({ 'req.params.id': req.params.id })
-    // console.log({ 'req.body': req.body })
     if (req.params.id != req.userId) {
         res.status(403).json({ message: 'You are not authorised to update this user' });
 
@@ -296,27 +300,6 @@ export const updateUser = async (req: CustomRequest, res: Response, next: NextFu
                     console.error('Image size exceeds 100KB. Image not uploaded.');
                 }
 
-                // await sharp(imageBuffer)
-                //     .resize(150, 150)
-                //     .webp()
-                //     // .jpeg()
-                //     .toBuffer()
-                //     .then(async (resizedWebPImageBuffer) => {
-                //         const params = {
-                //             Bucket: s3BucketName,
-                //             Key: `ProfileImage-${userId}-${Date.now()}`,
-                //             body: resizedWebPImageBuffer
-                //         }
-                //         const command = new PutObjectCommand(params)
-                //         await s3.send(command)
-
-                //         delete updatedFields.image;
-
-                //     })
-                //     .catch((err) => {
-                //         console.error(err);
-                //     });
-
 
             }
 
@@ -357,7 +340,6 @@ export const updateUser = async (req: CustomRequest, res: Response, next: NextFu
 };
 
 export const checkUserExistence = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    console.log({ email: req.params.email })
     try {
         const user = await User.findOne({ where: { email: req.params.email } });
 

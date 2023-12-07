@@ -27,18 +27,16 @@ database.authenticate()
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(cors({
-    exposedHeaders: ['Ratelimit-Remaining'],
+    exposedHeaders: ['Ratelimit-Remaining', 'Authorization'],
 }));
 app.use((req, res, next) => {
-    console.log('Request Origin:', req.get('Origin'));
-    console.log({ authHeader: req.headers['authorization'] })
-    console.log({ AuthHeader: req.headers['Authorization'] })
-    console.log({ Header: req.headers })
-    const cookies = parse(req.headers.cookie || '');
+    const allowedOrigins = ['http://localhost:8081', 'http://192.168.43.235:8081'];
+    const origin = req.headers.origin;
+    console.log({ origin })
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
-
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
-    // res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');

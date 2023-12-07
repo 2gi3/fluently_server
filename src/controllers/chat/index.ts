@@ -10,6 +10,7 @@ import UsersChats from '../../models/chat/users_chats.js';
 import { ChatroomT } from '../../types/chat.js';
 import { Op } from 'sequelize';
 import { parse } from 'cookie';
+import { CustomRequest } from '../../types/index.js';
 
 
 
@@ -22,6 +23,7 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const timestamp = new Date().getTime();
 
 export const createChatroom = async (req: Request, res: Response, next: NextFunction) => {
+    console.log('qwerty1230a9')
     try {
         const { user1Id, user2Id } = req.body;
 
@@ -69,17 +71,11 @@ export const createChatroom = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-export const getAllUserChatrooms = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllUserChatrooms = async (req: CustomRequest, res: Response, next: NextFunction) => {
     const userId = req.params.id;
 
-    const cookies = parse(req.headers.cookie || 'no cookie');
 
-    // Access the 'token' cookie
-    // const token = cookies.token || 'no token';
-    const authHeader = req.headers['authorization'];
-    //@ts-ignore
-    console.log({ huId: req.userId })
-    //@ts-ignore
+
     if (userId == req.userId) {
 
         try {
