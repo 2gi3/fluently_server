@@ -11,6 +11,8 @@ import { ChatroomT } from '../../types/chat.js';
 import { Op } from 'sequelize';
 import { parse } from 'cookie';
 import { CustomRequest } from '../../types/index.js';
+import Message from '../../models/chat/message.js';
+import sequelize from 'sequelize';
 
 
 
@@ -92,8 +94,23 @@ export const getAllUserChatrooms = async (req: CustomRequest, res: Response, nex
                     id: chatIds
                 }
             });
+            const lastMessagesIds = chatrooms.map((chat: any) => chat.last_message_id);
+            const filteredLastMessagesIds = lastMessagesIds.filter(id => id !== null);
 
-            res.status(200).json(chatrooms);
+            const lastMessages = await Message.findAll({
+                where: {
+                    id: {
+                        [sequelize.Op.in]: filteredLastMessagesIds
+                    }
+                },
+                order: [['created_at', 'DESC']]
+            });
+
+
+            res.status(200).json({
+                chatrooms,
+                lastMessages
+            });
         } catch (error) {
             res.status(400).json({
                 error: error.message

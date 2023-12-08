@@ -4,6 +4,8 @@ import path from 'path';
 import Chatroom from '../../models/chat/index.js';
 import UsersChats from '../../models/chat/users_chats.js';
 import { Op } from 'sequelize';
+import Message from '../../models/chat/message.js';
+import sequelize from 'sequelize';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,7 +71,20 @@ export const getAllUserChatrooms = async (req, res, next) => {
                     id: chatIds
                 }
             });
-            res.status(200).json(chatrooms);
+            const lastMessagesIds = chatrooms.map((chat) => chat.last_message_id);
+            const filteredLastMessagesIds = lastMessagesIds.filter(id => id !== null);
+            const lastMessages = await Message.findAll({
+                where: {
+                    id: {
+                        [sequelize.Op.in]: filteredLastMessagesIds
+                    }
+                },
+                order: [['created_at', 'DESC']]
+            });
+            res.status(200).json({
+                chatrooms,
+                lastMessages
+            });
         }
         catch (error) {
             res.status(400).json({
