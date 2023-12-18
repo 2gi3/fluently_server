@@ -71,6 +71,35 @@ CREATE TABLE refresh_tokens (
     PRIMARY KEY (token)
 );
 
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    body VARCHAR(255),
+    image VARCHAR(255),
+    type ENUM('question', 'moment') NOT NULL,
+    topic VARCHAR(255),
+    status ENUM('open', 'closed'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id)
+);
+
+CREATE TABLE user_posts (
+    userId INT NOT NULL,
+    postId INT NOT NULL,
+    PRIMARY KEY (userId, postId),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
+);
+
+CREATE TABLE user_saved_posts (
+    userId INT NOT NULL,
+    postId INT NOT NULL,
+    PRIMARY KEY (userId, postId),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
+);
+
 -- Database Cleaned up code
 -- Create the 'users' table
 CREATE TABLE IF NOT EXISTS users (
@@ -138,3 +167,32 @@ DROP FOREIGN KEY FK_message_chat;
 
 ALTER TABLE messages
 ADD CONSTRAINT FK_message_chat FOREIGN KEY (chatId) REFERENCES chatrooms(id);
+
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    body VARCHAR(255),
+    image VARCHAR(255),
+    type ENUM('question', 'moment') NOT NULL,
+    topic VARCHAR(255),
+    status ENUM('open', 'closed'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id)
+);
+
+CREATE TABLE user_posts (
+    userId INT NOT NULL,
+    postId INT NOT NULL,
+    PRIMARY KEY (userId, postId),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
+);
+
+CREATE TABLE user_likes (
+    userId INT NOT NULL,
+    postId INT NOT NULL,
+    PRIMARY KEY (userId, postId),
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
+);

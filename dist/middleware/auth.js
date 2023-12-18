@@ -2,8 +2,6 @@ import jwt from 'jsonwebtoken';
 const auth = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const accessToken = authHeader && authHeader.split(' ')[1];
-    console.log({ accessTokenA: accessToken });
-    // console.log({ headers: req.headers })
     if (!accessToken) {
         return res.status(401).json({
             error: 'Unauthorized: No access token provided.',

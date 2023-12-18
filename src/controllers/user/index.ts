@@ -25,7 +25,7 @@ const s3BucketAccessKey = process.env.IAM_ACCESS_KEY
 const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY
 
 
-export const generateAccessToken = (user: any, expiresIn: string | number = '25h') => {
+export const generateAccessToken = (user: any, expiresIn: string | number = '1h') => {
     return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn });
 };
 
@@ -62,6 +62,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         });
 
         const createdUser: any = await user.save();
+
 
         const accessToken = generateAccessToken(createdUser)
         const refreshToken = jwt.sign({ id: createdUser.id }, process.env.REFRESH_TOKEN_SECRET);
@@ -144,7 +145,6 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
                         gender: user.gender || null,
                         banned: user.banned || null,
                     },
-                    // accessToken,
                     refreshToken
                 });
 

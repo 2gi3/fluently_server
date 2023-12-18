@@ -3,7 +3,7 @@ import { createAccessToken, deleteRefreshToken } from '../../controllers/auth/in
 import { lowLimiter } from '../../middleware/rateLimiter.js';
 import auth from '../../middleware/auth.js';
 const router = express.Router();
-router.get('/token/:token', auth, lowLimiter, createAccessToken);
+router.get('/token/:token', lowLimiter, createAccessToken);
 router.delete('/token/:token', auth, lowLimiter, deleteRefreshToken);
 export default router;
 //# sourceMappingURL=index.js.map

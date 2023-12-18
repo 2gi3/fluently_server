@@ -6,6 +6,7 @@ import database from '../config/db.config.mjs';
 import userRoutes from './routes/user/index.js';
 import chatRoutes from './routes/chat/index.js';
 import authRoutes from './routes/auth/index.js';
+import communityRoutes from './routes/community/index.js';
 import cors from 'cors';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
@@ -24,7 +25,6 @@ app.use(cors({
 app.use((req, res, next) => {
     const allowedOrigins = ['http://localhost:8081', 'http://192.168.43.235:8081'];
     const origin = req.headers.origin;
-    console.log({ origin });
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
@@ -33,8 +33,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
+app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/community', communityRoutes);
 export default app;
 //# sourceMappingURL=app.js.map

@@ -12,8 +12,7 @@ const auth: any = (req: CustomRequest, res: Response, next: NextFunction): Respo
     const authHeader = req.headers['authorization'];
     const accessToken = authHeader && authHeader.split(' ')[1]
 
-    console.log({ accessTokenA: accessToken })
-    // console.log({ headers: req.headers })
+
 
 
     if (!accessToken) {
