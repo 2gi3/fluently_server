@@ -17,7 +17,7 @@ export const createPost = async (req, res, next) => {
     console.log({ tst: 'ertyu', img: req.body.image });
     let responseMesage = null;
     let newImageUrl = null;
-    if (req.userId != req.userId) {
+    if (req.userId != req.body.userId) {
         res.status(403).json({ message: 'You are not authorised to create this Post' });
     }
     else {
@@ -83,8 +83,31 @@ export const getAllPosts = async (req, res, next) => {
                     attributes: ['name', 'image']
                 },
             ],
+            order: [
+                ['created_at', 'DESC']
+            ]
         });
         res.status(200).json(posts);
+    }
+    catch (error) {
+        res.status(400).json({
+            error: error.message,
+        });
+    }
+};
+export const getOnePost = async (req, res, next) => {
+    try {
+        const post = await Post.findOne({
+            where: { id: req.params.id },
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['name', 'image']
+                },
+            ],
+        });
+        res.status(200).json(post);
     }
     catch (error) {
         res.status(400).json({
