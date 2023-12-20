@@ -12,6 +12,13 @@ import path from 'path';
 import RefreshToken from '../../models/auth/index.js';
 import { CustomRequest } from '../../types/index.js';
 import cookie from 'cookie'
+import Message from '../../models/chat/message.js';
+import UsersChats from '../../models/chat/users_chats.js';
+import Chatroom from '../../models/chat/index.js';
+import { Op } from 'sequelize';
+import Post from '../../models/community/index.js';
+import UserPosts from '../../models/community/user_posts.js';
+import { deleteImageFromS3 } from '../../utilities/globalFunctions.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -162,35 +169,86 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     // }
 };
 
+
+// Query the database to see a count of everything associate witht he user
+// Change the user id before using
+
+// SELECT 
+//     (SELECT COUNT(*) FROM users WHERE id = 58) AS user_count,
+//     (SELECT COUNT(*) FROM messages WHERE userId = 58) AS message_count,
+//     (SELECT COUNT(*) FROM users_chats WHERE user_id = 58) AS users_chats_count,
+//     (SELECT COUNT(*) FROM chatrooms WHERE user1Id = 58 OR user2Id = 58) AS chatrooms_count,
+//     (SELECT COUNT(*) FROM posts WHERE userId = 58) AS posts_count,
+//     (SELECT COUNT(*) FROM user_posts WHERE userId = 58) AS user_posts_count;
+
 export const deleteUser = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
 
     if (req.params.id != req.userId) {
         res.status(403).json({ message: 'You are not authorised to delete this user' });
-
-    } else {
-        User.findOne({ where: { id: req.params.id } }).then(
-
-            (user) => {
-
-                user.destroy().then(
-                    () => {
-                        res.status(200).json({
-                            message: 'Your account was deleted!'
-                        });
-                    }
-                ).catch(
-                    (error) => {
-                        res.status(400).json({
-                            error: error
-                        });
-                    }
-                );
-
-            }
-        );
+        return;
     }
 
+    try {
+        const user = await User.findOne({ where: { id: req.params.id } });
+
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+
+        if (user.image) {
+            deleteImageFromS3(user.image)
+        }
+
+        const userPosts = await Post.findAll({ where: { userId: user.id } });
+
+        for (const post of userPosts) {
+            if (post.image) {
+                deleteImageFromS3(post.image);
+            }
+        }
+
+        const chatrooms = await Chatroom.findAll({
+            where: {
+                [Op.or]: [
+                    { user1Id: user.id },
+                    { user2Id: user.id }
+                ]
+            }
+        });
+
+        if (chatrooms) {
+            for (const chatroom of chatrooms) {
+                await Message.destroy({ where: { chatId: chatroom.id } });
+                await UsersChats.destroy({ where: { chat_id: chatroom.id } });
+            }
+        }
+
+
+        await Chatroom.destroy({
+            where: {
+                [Op.or]: [
+                    { user1Id: user.id },
+                    { user2Id: user.id }
+                ]
+            }
+        });
+        await UserPosts.destroy({ where: { userId: user.id } });
+
+        await Post.destroy({ where: { userId: user.id } });
+
+        await user.destroy();
+
+        res.status(200).json({
+            message: 'Your account was deleted!'
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
 }
+
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     User.findAll(
@@ -274,7 +332,7 @@ export const updateUser = async (req: CustomRequest, res: Response, next: NextFu
                 // Check if the image size is less than 100KB (100 * 1024 bytes)
                 if (imageBuffer.length <= 100 * 1024) {
 
-                    const imageName = `ProfileImage-${userId}-${Date.now()}`
+                    const imageName = `profileImages/ProfileImage-${userId}-${Date.now()}`
                     const params = {
                         ACL: "public-read",
                         Bucket: s3BucketName,
