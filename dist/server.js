@@ -52,7 +52,20 @@ const wss = new WebSocketServer({ server });
 // const clients = new Set<WebSocket>();
 const userSockets = new Map();
 // const connectedUsers = [];
+let intervalId = null;
+const sendHeartbeat = () => {
+    wss.clients.forEach((client) => {
+        client.send(JSON.stringify({
+            type: 'Check',
+            time: new Date(),
+            connectedUsers: Array.from(userSockets.keys())
+        }));
+    });
+};
 wss.on('connection', (ws) => {
+    if (!intervalId && userSockets.size > 0) {
+        intervalId = setInterval(sendHeartbeat, 3000);
+    }
     ws.on('message', (message) => {
         const parsedMessage = JSON.parse(message);
         if (parsedMessage.connectedUserId) {
@@ -102,34 +115,4 @@ wss.on('connection', (ws) => {
         }
     });
 });
-// wss.on('connection', (ws: WebSocket) => {
-//     // clients.add(ws);
-//     // console.log({ 'A new WebSocket connection opened': ws });
-//     ws.on('message', (message: any) => {
-//         const parsedMessage = JSON.parse(message)
-//         if (parsedMessage.connectedUserId) {
-//             const userId = parsedMessage.connectedUserId;
-//             userSockets.set(userId, ws);
-//             console.log(`User connected: ${userId}`);
-//             console.log({ 'userSockets': userSockets });
-//         } else {
-//             // console.log(`message: ${message}`);
-//             for (const [userId, socket] of userSockets.entries()) {
-//                 if (socket !== ws) {
-//                     socket.send(message);
-//                     break;
-//                 }
-//             }
-//         }
-//     });
-//     ws.on('close', () => {
-//         for (const [userId, socket] of userSockets.entries()) {
-//             if (socket === ws) {
-//                 userSockets.delete(userId);
-//                 console.log(`User disconnected: ${userId}`);
-//                 break;
-//             }
-//         }
-//     });
-// });
 //# sourceMappingURL=server.js.map
