@@ -10,7 +10,7 @@ class NewUser extends Model<NewUserT> {
     public password!: string;
     public name!: string;
     public nationality!: string;
-    public country!: string;
+    public country?: string;
     public native_language!: string;
     public teaching_language!: string;
     public learning_language!: string;
@@ -36,7 +36,7 @@ NewUser.init(
         },
         country: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         native_language: {
             type: DataTypes.STRING,

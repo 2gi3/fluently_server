@@ -23,7 +23,7 @@ NewUser.init({
     },
     country: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     native_language: {
         type: DataTypes.STRING,

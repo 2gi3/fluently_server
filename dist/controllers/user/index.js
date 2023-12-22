@@ -137,6 +137,7 @@ export const login = async (req, res, next) => {
     //  finally {
     // }
 };
+// To test delete user:
 // Query the database to see a count of everything associate witht he user
 // Change the user id before using
 // SELECT 
@@ -241,7 +242,6 @@ export const updateUser = async (req, res, next) => {
             // These fields should not be updated
             const excludedFields = [
                 'nationality',
-                'country',
                 'native_language',
                 'teaching_language',
                 'learning_language',

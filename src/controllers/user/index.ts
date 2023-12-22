@@ -169,7 +169,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     // }
 };
 
-
+// To test delete user:
 // Query the database to see a count of everything associate witht he user
 // Change the user id before using
 
@@ -299,7 +299,6 @@ export const updateUser = async (req: CustomRequest, res: Response, next: NextFu
             // These fields should not be updated
             const excludedFields = [
                 'nationality',
-                'country',
                 'native_language',
                 'teaching_language',
                 'learning_language',
