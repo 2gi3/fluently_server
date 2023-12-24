@@ -5,6 +5,7 @@ import User from '../../models/user/index.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import Post from '../../models/community/index.js';
 import UserPosts from '../../models/community/user_posts.js';
+import PostComment from '../../models/community/postComment.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,7 +15,6 @@ const s3BucketRegion = process.env.BUCKET_REGION;
 const s3BucketAccessKey = process.env.IAM_ACCESS_KEY;
 const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY;
 export const createPost = async (req, res, next) => {
-    console.log({ tst: 'ertyu', img: req.body.image });
     let responseMesage = null;
     let newImageUrl = null;
     if (req.userId != req.body.userId) {
@@ -80,8 +80,20 @@ export const getAllPosts = async (req, res, next) => {
                 {
                     model: User,
                     as: 'user',
-                    attributes: ['name', 'image']
+                    attributes: ['name', 'image'],
                 },
+                {
+                    model: PostComment,
+                    as: 'comments',
+                    attributes: ['id', 'userId', 'postId', 'body'],
+                    include: [
+                        {
+                            model: User,
+                            as: 'user',
+                            attributes: ['name', 'image']
+                        }
+                    ]
+                }
             ],
             order: [
                 ['created_at', 'DESC']
@@ -105,6 +117,18 @@ export const getOnePost = async (req, res, next) => {
                     as: 'user',
                     attributes: ['name', 'image']
                 },
+                {
+                    model: PostComment,
+                    as: 'comments',
+                    attributes: ['id', 'userId', 'postId', 'body'],
+                    include: [
+                        {
+                            model: User,
+                            as: 'user',
+                            attributes: ['name', 'image']
+                        }
+                    ]
+                }
             ],
         });
         res.status(200).json(post);

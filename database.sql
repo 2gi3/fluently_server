@@ -99,7 +99,23 @@ CREATE TABLE user_saved_posts (
     FOREIGN KEY (userId) REFERENCES users(id),
     FOREIGN KEY (postId) REFERENCES posts(id)
 );
+CREATE TABLE postComments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    postId INT NOT NULL,
+    body VARCHAR(600) NOT NULL,
+    created_at DATETIME,
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
+);
 
+CREATE TABLE post_comments (
+    postId INT NOT NULL,
+    commentId INT NOT NULL,
+    PRIMARY KEY (postId, commentId),
+    FOREIGN KEY (postId) REFERENCES posts(id),
+    FOREIGN KEY (commentId) REFERENCES postComments(id)
+);
 -- Database Cleaned up code
 -- Create the 'users' table
 CREATE TABLE IF NOT EXISTS users (
@@ -195,4 +211,20 @@ CREATE TABLE user_likes (
     PRIMARY KEY (userId, postId),
     FOREIGN KEY (userId) REFERENCES users(id),
     FOREIGN KEY (postId) REFERENCES posts(id)
+);
+CREATE TABLE postComments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    postId INT NOT NULL,
+    body VARCHAR(600) NOT NULL,
+    created_at DATETIME,
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (postId) REFERENCES posts(id)
+);
+CREATE TABLE post_comments (
+    postId INT NOT NULL,
+    commentId INT NOT NULL,
+    PRIMARY KEY (postId, commentId),
+    FOREIGN KEY (postId) REFERENCES posts(id),
+    FOREIGN KEY (commentId) REFERENCES postComments(id)
 );

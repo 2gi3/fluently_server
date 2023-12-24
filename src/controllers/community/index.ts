@@ -7,15 +7,13 @@ import { Op } from 'sequelize';
 import { CustomRequest } from '../../types/index.js';
 import sequelize from 'sequelize';
 import { PostT } from '../../types/community.js';
-import * as bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import sharp from 'sharp';
-import NewUser from '../../models/user/newuser.js';
 import User from '../../models/user/index.js';
 import { UserT } from '../../types/user.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import Post from '../../models/community/index.js';
 import UserPosts from '../../models/community/user_posts.js';
+import PostComment from '../../models/community/postComment.js';
+import PostComments from '../../models/community/post_comments.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +28,6 @@ const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY
 
 export const createPost = async (req: CustomRequest<PostT>, res: Response, next: NextFunction) => {
 
-    console.log({ tst: 'ertyu', img: req.body.image })
     let responseMesage: string | null = null
     let newImageUrl: string | null = null
 
@@ -105,14 +102,27 @@ export const createPost = async (req: CustomRequest<PostT>, res: Response, next:
 };
 
 export const getAllPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
     try {
         const posts = await Post.findAll({
             include: [
                 {
                     model: User,
                     as: 'user',
-                    attributes: ['name', 'image']
+                    attributes: ['name', 'image'],
                 },
+                {
+                    model: PostComment,
+                    as: 'comments',
+                    attributes: ['id', 'userId', 'postId', 'body'],
+                    include: [
+                        {
+                            model: User,
+                            as: 'user',
+                            attributes: ['name', 'image']
+                        }
+                    ]
+                }
             ],
             order: [
                 ['created_at', 'DESC']
@@ -129,6 +139,7 @@ export const getAllPosts = async (req: Request, res: Response, next: NextFunctio
 };
 
 export const getOnePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
     try {
         const post = await Post.findOne({
             where: { id: req.params.id },
@@ -138,6 +149,18 @@ export const getOnePost = async (req: Request, res: Response, next: NextFunction
                     as: 'user',
                     attributes: ['name', 'image']
                 },
+                {
+                    model: PostComment,
+                    as: 'comments',
+                    attributes: ['id', 'userId', 'postId', 'body'],
+                    include: [
+                        {
+                            model: User,
+                            as: 'user',
+                            attributes: ['name', 'image']
+                        }
+                    ]
+                }
             ],
         });
 

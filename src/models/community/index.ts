@@ -3,6 +3,8 @@ import sequelize from '../../../config/db.config.mjs';
 import User from '../user/index.js';
 import Chatroom from './index.js';
 import { PostT } from "../../types/community.js";
+import PostComment from "./postComment.js";
+import PostComments from "./post_comments.js";
 
 class Post extends Model<PostT> {
     public id?: number;
@@ -28,8 +30,8 @@ Post.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'User', // This should match the model name for User
-                key: 'id',      // This should match the primary key in the User model
+                model: 'User',
+                key: 'id',
             }
         },
         title: {
@@ -72,4 +74,5 @@ Post.init(
 export default Post;
 
 Post.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Post.hasMany(PostComment, { foreignKey: 'postId', as: 'comments' });
 

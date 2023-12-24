@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from '../../../config/db.config.mjs';
 import User from '../user/index.js';
+import PostComment from "./postComment.js";
 class Post extends Model {
 }
 Post.init({
@@ -14,7 +15,7 @@ Post.init({
         allowNull: false,
         references: {
             model: 'User',
-            key: 'id', // This should match the primary key in the User model
+            key: 'id',
         }
     },
     title: {
@@ -53,4 +54,5 @@ Post.init({
 });
 export default Post;
 Post.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Post.hasMany(PostComment, { foreignKey: 'postId', as: 'comments' });
 //# sourceMappingURL=index.js.map

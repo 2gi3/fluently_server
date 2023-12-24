@@ -35,10 +35,9 @@ UserPosts.init(
     }
 );
 
+export default UserPosts;
+
 UserPosts.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 UserPosts.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
 
 User.belongsToMany(Post, { through: UserPosts, foreignKey: "userId" });
-
-
-export default UserPosts;

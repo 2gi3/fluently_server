@@ -14,4 +14,10 @@ export interface PostT {
     user?: Pick<UserT, 'name' | 'image'>;
 }
 
-
+export interface CommentT {
+    id?: number
+    userId: string | number
+    postId: string | number
+    body: string;
+    created_at?: Date
+}
