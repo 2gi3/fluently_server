@@ -19,5 +19,6 @@ export interface CommentT {
     userId: string | number
     postId: string | number
     body: string;
+    user?: Pick<UserT, 'name' | 'image'>;
     created_at?: Date
 }

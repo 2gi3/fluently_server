@@ -3,17 +3,14 @@ import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { Op } from 'sequelize';
 import { CustomRequest } from '../../types/index.js';
 import sequelize from 'sequelize';
 import { PostT } from '../../types/community.js';
 import User from '../../models/user/index.js';
-import { UserT } from '../../types/user.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import Post from '../../models/community/index.js';
 import UserPosts from '../../models/community/user_posts.js';
 import PostComment from '../../models/community/postComment.js';
-import PostComments from '../../models/community/post_comments.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
