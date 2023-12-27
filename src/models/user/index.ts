@@ -1,6 +1,7 @@
 import { Sequelize, DataTypes, Model } from "sequelize";
 import database from '../../../config/db.config.mjs';
 import { Gender, UserT } from "../../types/user.js";
+import SavedPost from "../community/savedPosts.js";
 
 const sequelize = database;
 
@@ -97,3 +98,4 @@ User.init(
 );
 
 export default User;
+// User.hasMany(SavedPost, { foreignKey: 'userId', as: 'savedPosts' });

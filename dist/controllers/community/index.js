@@ -6,6 +6,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import Post from '../../models/community/index.js';
 import UserPosts from '../../models/community/user_posts.js';
 import PostComment from '../../models/community/postComment.js';
+import SavedPost from '../../models/community/savedPosts.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,6 +74,21 @@ export const createPost = async (req, res, next) => {
         });
     }
 };
+export const createSavedPost = async (req, res, next) => {
+    console.log(req.body);
+    try {
+        const savedPost = await SavedPost.create({ userId: req.body.userId, postId: req.body.postId });
+        res.status(201).json({
+            message: 'Post saved successfully!',
+            savedPost
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            error: error.message,
+        });
+    }
+};
 export const getAllPosts = async (req, res, next) => {
     try {
         const posts = await Post.findAll({
@@ -136,6 +152,29 @@ export const getOnePost = async (req, res, next) => {
     catch (error) {
         res.status(400).json({
             error: error.message,
+        });
+    }
+};
+export const deleteSavedPost = async (req, res, next) => {
+    try {
+        const userId = req.params.userId;
+        const postId = req.params.postId;
+        const savedPost = await SavedPost.findOne({
+            where: { userId, postId }
+        });
+        if (!savedPost) {
+            return res.status(404).json({
+                message: 'Saved post not found!'
+            });
+        }
+        await savedPost.destroy();
+        res.status(200).json({
+            message: 'Post unsaved successfully!'
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            error: error.message
         });
     }
 };
