@@ -1,3 +1,5 @@
+import { PostT } from "./community.js";
+
 export interface NewUserT {
     email: string;
     password: string;
@@ -17,6 +19,8 @@ export interface UserT extends NewUserT {
     gender?: Gender | null;
     banned?: boolean | null;
     status?: string;
+    posts?: PostT[]
+    savedPosts?: number[]
 }
 
 export enum Gender {

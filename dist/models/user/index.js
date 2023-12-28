@@ -73,5 +73,4 @@ User.init({
     timestamps: false,
 });
 export default User;
-// User.hasMany(SavedPost, { foreignKey: 'userId', as: 'savedPosts' });
 //# sourceMappingURL=index.js.map

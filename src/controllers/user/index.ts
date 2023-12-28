@@ -15,10 +15,11 @@ import cookie from 'cookie'
 import Message from '../../models/chat/message.js';
 import UsersChats from '../../models/chat/users_chats.js';
 import Chatroom from '../../models/chat/index.js';
-import { Op } from 'sequelize';
+import { Op, json } from 'sequelize';
 import Post from '../../models/community/index.js';
 import UserPosts from '../../models/community/user_posts.js';
 import { deleteImageFromS3 } from '../../utilities/globalFunctions.js';
+import SavedPost from '../../models/community/savedPosts.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -269,11 +270,28 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
     );
 }
 
-export const getOneUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getOneUser = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const user = await User.findOne({ where: { id: req.params.id } });
+
+        const user = await User.findOne({
+            where: { id: req.params.id },
+            include: [
+                {
+                    model: Post,
+                    as: 'Posts',
+                    attributes: ['id', 'title'],
+                }
+            ]
+        });
 
         if (user) {
+            if (req.params.id != req.userId) {
+                const savedPosts = await SavedPost.findAll({
+                    where: { userid: req.params.id },
+                })
+                const postIds = savedPosts.map(post => post.postId);
+                user.setDataValue('savedPosts', postIds);
+            }
             res.status(200).json(user);
         } else {
             res.status(404).json({ message: 'User not found' });

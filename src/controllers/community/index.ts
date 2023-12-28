@@ -101,19 +101,40 @@ export const createPost = async (req: CustomRequest<PostT>, res: Response, next:
 
 
 export const createSavedPost = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    console.log(req.body)
-    try {
-        const savedPost = await SavedPost.create({ userId: req.body.userId, postId: req.body.postId });
+    console.log({ userId: req.body.userId, postId: req.body.postId })
+    if (req.userId != req.body.userId) {
+        res.status(403).json({ message: 'You are not authorised to save this Post for this user' });
 
-        res.status(201).json({
-            message: 'Post saved successfully!',
-            savedPost
-        });
-    } catch (error) {
-        res.status(400).json({
-            error: error.message,
-        });
+    } else {
+        try {
+            const existingSavedPost = await SavedPost.findOne({
+                where: {
+                    userId: req.body.userId,
+                    postId: req.body.postId
+                }
+            });
 
+            if (existingSavedPost) {
+                await existingSavedPost.destroy(); // Delete the existing savedPost
+                res.status(200).json({
+                    message: 'Post removed from saved posts!',
+                    savedPost: existingSavedPost
+                });
+                return;
+            }
+
+            const savedPost = await SavedPost.create({ userId: req.body.userId, postId: req.body.postId });
+
+            res.status(201).json({
+                message: 'Post saved successfully!',
+                savedPost
+            });
+        } catch (error) {
+            res.status(400).json({
+                error: error.message,
+            });
+
+        }
     }
 
 }
@@ -191,29 +212,68 @@ export const getOnePost = async (req: Request, res: Response, next: NextFunction
 };
 
 export const deleteSavedPost = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.params.userId;
-        const postId = req.params.postId;
+    if (req.userId != req.params.userId) {
+        res.status(403).json({ message: 'You are not authorised to unsave this post' });
+
+    } else {
+        try {
+            const userId = req.params.userId;
+            const postId = req.params.postId;
 
 
-        const savedPost = await SavedPost.findOne({
-            where: { userId, postId }
-        });
+            const savedPost = await SavedPost.findOne({
+                where: { userId, postId }
+            });
 
-        if (!savedPost) {
-            return res.status(404).json({
-                message: 'Saved post not found!'
+            if (!savedPost) {
+                return res.status(404).json({
+                    message: 'Saved post not found!'
+                });
+            }
+
+            await savedPost.destroy();
+
+            res.status(200).json({
+                message: 'Post unsaved successfully!'
+            });
+        } catch (error) {
+            res.status(400).json({
+                error: error.message
             });
         }
+    }
+}
 
-        await savedPost.destroy();
+export const getSavedPosts = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    console.log({ reqp: req.params })
+    if (req.userId != req.params.userId) {
+        res.status(403).json({ message: 'You are not authorised to access this list' });
 
-        res.status(200).json({
-            message: 'Post unsaved successfully!'
-        });
-    } catch (error) {
-        res.status(400).json({
-            error: error.message
-        });
+    } else {
+        try {
+            const savedPosts = await SavedPost.findAll({
+                where: { userid: req.params.userId },
+                include: [
+                    {
+                        model: User,
+                        as: 'user',
+                        attributes: ['name', 'image']
+                    },
+                    {
+                        model: Post,
+                        as: 'post',
+                        attributes: ['title', 'type']
+                    }
+                ]
+
+            });
+
+
+            res.status(200).json(savedPosts);
+        } catch (error) {
+            res.status(400).json({
+                error: error.message,
+            });
+        }
     }
 }

@@ -98,4 +98,3 @@ User.init(
 );
 
 export default User;
-// User.hasMany(SavedPost, { foreignKey: 'userId', as: 'savedPosts' });

@@ -5,6 +5,7 @@ import Chatroom from './index.js';
 import { PostT } from "../../types/community.js";
 import PostComment from "./postComment.js";
 import PostComments from "./post_comments.js";
+import SavedPost from "./savedPosts.js";
 
 class Post extends Model<PostT> {
     public id?: number;

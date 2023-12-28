@@ -22,3 +22,10 @@ export interface CommentT {
     user?: Pick<UserT, 'name' | 'image'>;
     created_at?: Date
 }
+
+export interface SavedPostT {
+    userId: UserT['id']
+    postId: PostT['id']
+    user?: Pick<UserT, 'name' | 'image'>
+    post?: Pick<PostT, 'title' | 'type'>
+}
