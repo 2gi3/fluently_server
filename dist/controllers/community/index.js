@@ -88,18 +88,29 @@ export const createSavedPost = async (req, res, next) => {
                 }
             });
             if (existingSavedPost) {
-                await existingSavedPost.destroy(); // Delete the existing savedPost
+                await existingSavedPost.destroy();
+                const updatedSavedPosts = await SavedPost.findAll({
+                    where: {
+                        userId: req.body.userId
+                    }
+                });
                 res.status(200).json({
                     message: 'Post removed from saved posts!',
-                    savedPost: existingSavedPost
+                    savedPosts: updatedSavedPosts
                 });
                 return;
             }
             const savedPost = await SavedPost.create({ userId: req.body.userId, postId: req.body.postId });
+            const updatedSavedPosts = await SavedPost.findAll({
+                where: {
+                    userId: req.body.userId
+                }
+            });
             res.status(201).json({
                 message: 'Post saved successfully!',
-                savedPost
+                savedPosts: updatedSavedPosts
             });
+            return;
         }
         catch (error) {
             res.status(400).json({
@@ -203,7 +214,6 @@ export const deleteSavedPost = async (req, res, next) => {
     }
 };
 export const getSavedPosts = async (req, res, next) => {
-    console.log({ reqp: req.params });
     if (req.userId != req.params.userId) {
         res.status(403).json({ message: 'You are not authorised to access this list' });
     }

@@ -79,7 +79,9 @@ export const signup = async (req, res, next) => {
 };
 export const login = async (req, res, next) => {
     try {
-        const user = await User.findOne({ where: { email: req.body.email } });
+        const user = await User.findOne({
+            where: { email: req.body.email }
+        });
         if (!user) {
             res.status(401).json({
                 error: new Error('User not found!').message,
@@ -109,7 +111,22 @@ export const login = async (req, res, next) => {
                 //     domain: 'localhost',
                 // });
                 res.setHeader('Authorization', `Bearer ${accessToken}`);
+                const savedPosts = await SavedPost.findAll({
+                    where: { userid: user.id },
+                    include: [
+                        {
+                            model: Post,
+                            as: 'post',
+                            attributes: ['title', 'type']
+                        }
+                    ]
+                });
+                const posts = await Post.findAll({
+                    where: { userId: user.id },
+                });
                 res.status(200).json({
+                    savedPosts,
+                    posts,
                     user: {
                         id: user.id,
                         name: user.name,
@@ -230,12 +247,19 @@ export const getOneUser = async (req, res, next) => {
             ]
         });
         if (user) {
-            if (req.params.id != req.userId) {
+            if (req.params.id == req.userId) {
                 const savedPosts = await SavedPost.findAll({
                     where: { userid: req.params.id },
+                    include: [
+                        {
+                            model: Post,
+                            as: 'post',
+                            attributes: ['title', 'type']
+                        }
+                    ]
                 });
-                const postIds = savedPosts.map(post => post.postId);
-                user.setDataValue('savedPosts', postIds);
+                // const postIds = savedPosts.map(post => post.postId);
+                user.setDataValue('savedPosts', savedPosts);
             }
             res.status(200).json(user);
         }

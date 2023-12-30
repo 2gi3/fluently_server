@@ -82,7 +82,7 @@ const sendHeartbeat = () => {
 wss.on('connection', (ws: WebSocket) => {
 
     if (!intervalId && userSockets.size > 0) {
-        intervalId = setInterval(sendHeartbeat, 60000); // 1 minutes
+        intervalId = setInterval(sendHeartbeat, 10000); // 10 seconds
     }
 
     ws.on('message', (message: any) => {

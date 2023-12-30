@@ -1,4 +1,4 @@
-import { PostT } from "./community.js";
+import { PostT, SavedPostT } from "./community.js";
 
 export interface NewUserT {
     email: string;
@@ -20,7 +20,7 @@ export interface UserT extends NewUserT {
     banned?: boolean | null;
     status?: string;
     posts?: PostT[]
-    savedPosts?: number[]
+    savedPosts?: SavedPostT[]
 }
 
 export enum Gender {
