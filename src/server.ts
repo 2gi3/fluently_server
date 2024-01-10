@@ -63,9 +63,7 @@ server.on('listening', () => {
 
 server.listen(port);
 const wss = new WebSocketServer({ server });
-// const clients = new Set<WebSocket>();
 const userSockets = new Map();
-// const connectedUsers = [];
 
 let intervalId: NodeJS.Timeout | null = null;
 
@@ -81,7 +79,7 @@ const sendHeartbeat = () => {
 
 wss.on('connection', (ws: WebSocket) => {
 
-    if (!intervalId && userSockets.size > 0) {
+    if (!intervalId && ws) {
         intervalId = setInterval(sendHeartbeat, 10000); // 10 seconds
     }
 
@@ -92,12 +90,7 @@ wss.on('connection', (ws: WebSocket) => {
             const userId = parsedMessage.connectedUserId;
             userSockets.set(userId, ws);
             // console.log(`User connected: ${userId}`);
-            // console.log({ userSockets });
-
-            // Send the list of connected users to the client
             const connectedUsers = Array.from(userSockets.keys());
-            // ws.send("Welcome to the chat!");
-            // ws.send(JSON.stringify({ userSockets: Array.from(userSockets.keys()) }));
             for (const client of userSockets.values()) {
                 client.send(JSON.stringify({ userSockets: connectedUsers }));
             }
@@ -124,13 +117,11 @@ wss.on('connection', (ws: WebSocket) => {
         for (const [userId, socket] of userSockets.entries()) {
             if (socket === ws) {
                 userSockets.delete(userId);
-                console.log(`User disconnected: ${userId}`);
+                // console.log(`User disconnected: ${userId}`);
 
-                // Send the updated list of connected users to all clients
                 const connectedUsers = Array.from(userSockets.keys());
                 for (const client of userSockets.values()) {
-                    // client.send(JSON.stringify({ connectedUsers }));
-                    // client.send(JSON.stringify({ userSockets: Array.from(userSockets.keys()) }));
+
                     for (const client of userSockets.values()) {
                         client.send(JSON.stringify({ userSockets: connectedUsers }));
                     }

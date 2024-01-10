@@ -49,9 +49,7 @@ server.on('listening', () => {
 });
 server.listen(port);
 const wss = new WebSocketServer({ server });
-// const clients = new Set<WebSocket>();
 const userSockets = new Map();
-// const connectedUsers = [];
 let intervalId = null;
 const sendHeartbeat = () => {
     wss.clients.forEach((client) => {
@@ -63,7 +61,7 @@ const sendHeartbeat = () => {
     });
 };
 wss.on('connection', (ws) => {
-    if (!intervalId && userSockets.size > 0) {
+    if (!intervalId && ws) {
         intervalId = setInterval(sendHeartbeat, 10000); // 10 seconds
     }
     ws.on('message', (message) => {
@@ -72,11 +70,7 @@ wss.on('connection', (ws) => {
             const userId = parsedMessage.connectedUserId;
             userSockets.set(userId, ws);
             // console.log(`User connected: ${userId}`);
-            // console.log({ userSockets });
-            // Send the list of connected users to the client
             const connectedUsers = Array.from(userSockets.keys());
-            // ws.send("Welcome to the chat!");
-            // ws.send(JSON.stringify({ userSockets: Array.from(userSockets.keys()) }));
             for (const client of userSockets.values()) {
                 client.send(JSON.stringify({ userSockets: connectedUsers }));
             }
@@ -100,12 +94,9 @@ wss.on('connection', (ws) => {
         for (const [userId, socket] of userSockets.entries()) {
             if (socket === ws) {
                 userSockets.delete(userId);
-                console.log(`User disconnected: ${userId}`);
-                // Send the updated list of connected users to all clients
+                // console.log(`User disconnected: ${userId}`);
                 const connectedUsers = Array.from(userSockets.keys());
                 for (const client of userSockets.values()) {
-                    // client.send(JSON.stringify({ connectedUsers }));
-                    // client.send(JSON.stringify({ userSockets: Array.from(userSockets.keys()) }));
                     for (const client of userSockets.values()) {
                         client.send(JSON.stringify({ userSockets: connectedUsers }));
                     }

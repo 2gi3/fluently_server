@@ -20,9 +20,12 @@ if (
     typeof process.env.DATABASE_USER === 'string' && process.env.DATABASE_USER.trim() !== '' &&
     typeof process.env.DATABASE_PWD === 'string' && process.env.DATABASE_PWD.trim() !== '') {
 
-    database = new Sequelize(connectionUri);
+    database = new Sequelize(connectionUri, {
+        dialect: 'mysql',
+        logging: false
+    });
 } else {
     console.log('One of the following environment variables is not a string: DB, USER, PWD')
 }
-console.log(process.env.DB)
+
 export default database;
