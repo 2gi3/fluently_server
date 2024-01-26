@@ -9,6 +9,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // Load environment variables from the .env file located in the parent directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
+// type WebSocketMessage = {
+//     connectedUserId: string;
+// };
 const normalizePort = (val) => {
     const port = parseInt(val, 10);
     if (isNaN(port)) {
@@ -69,7 +72,6 @@ wss.on('connection', (ws) => {
         if (parsedMessage.connectedUserId) {
             const userId = parsedMessage.connectedUserId;
             userSockets.set(userId, ws);
-            // console.log(`User connected: ${userId}`);
             const connectedUsers = Array.from(userSockets.keys());
             for (const client of userSockets.values()) {
                 client.send(JSON.stringify({ userSockets: connectedUsers }));
