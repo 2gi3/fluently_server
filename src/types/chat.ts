@@ -7,9 +7,14 @@ export interface ChatroomT {
 
 export type MessageT = {
     id?: string;
-    chatId: string | number
-    userId: number | string
+    chatId: string | number;
+    userId: string | number;
     text: string;
-    status: string
+    status: string;
     created_at?: string;
+    type?: 'text' | 'audio' | 'image' | null
+    audioUrl?: string | null,
+    audioDuration?: number | null
+    imageUrl?: string | null
+
 };

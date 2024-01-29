@@ -28,6 +28,18 @@ Message.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
+    type: {
+        type: DataTypes.STRING,
+    },
+    audioUrl: {
+        type: DataTypes.STRING,
+    },
+    audioDuration: {
+        type: DataTypes.NUMBER
+    },
+    imageUrl: {
+        type: DataTypes.STRING,
+    },
     created_at: {
         type: DataTypes.DATE,
     }

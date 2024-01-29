@@ -11,6 +11,10 @@ class Message extends Model<MessageT> {
     public userId: number | string;
     public text: string;
     public status: string;
+    public type?: 'text' | 'audio' | 'image' | null;
+    public audioUrl: string | null;
+    public audioDuration: number | null;
+    public imageUrl?: string | null;
     public created_at: Date;
 }
 
@@ -38,6 +42,18 @@ Message.init(
         status: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        type: {
+            type: DataTypes.STRING,
+        },
+        audioUrl: {
+            type: DataTypes.STRING,
+        },
+        audioDuration: {
+            type: DataTypes.NUMBER
+        },
+        imageUrl: {
+            type: DataTypes.STRING,
         },
         created_at: {
             type: DataTypes.DATE,

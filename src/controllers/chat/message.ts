@@ -19,10 +19,11 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 export const createMessage = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { chatId, userId, text, status } = req.body;
+        const { chatId, userId, text, status, type, audioUrl, audioDuration, imageUrl } = req.body;
 
+        console.log({ chatId, userId, text, status, type, audioUrl, audioDuration, imageUrl })
         const message = new Message({
-            chatId, userId, text, status
+            chatId, userId, text, status, type, audioUrl, audioDuration, imageUrl
         });
 
         const newMessage = await message.save();
