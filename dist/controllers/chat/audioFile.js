@@ -22,7 +22,6 @@ export const saveAudioFile = async (req, res, next) => {
     // const audioFile = files.audio;
     // const fileSize = audioFile.size;
     // console.log(`Received audio file with size: ${fileSize} bytes`);
-    console.log({ req });
     let responseMesage = null;
     let newAudioFileUrl = null;
     try {
@@ -30,6 +29,7 @@ export const saveAudioFile = async (req, res, next) => {
             return res.status(400).json({ error: 'No audio file provided.' });
         }
         const audioFile = req.file;
+        console.log({ audioFile });
         const s3 = new S3Client({
             credentials: {
                 accessKeyId: s3BucketAccessKey,

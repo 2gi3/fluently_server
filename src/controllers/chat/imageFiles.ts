@@ -30,30 +30,14 @@ const s3BucketAccessKey = process.env.IAM_ACCESS_KEY
 const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY
 
 
-export const saveAudioFile = async (req: any, res: Response, next: NextFunction) => {
+export const saveImageFiles = async (req: any, res: Response, next: NextFunction) => {
 
-    console.log({ file: req.file })
-
-    // const { files } = req;
-
-    // if (!files || Object.keys(files).length === 0) {
-    //     return res.status(400).send('No audio file uploaded.');
-    // }
-
-    // const audioFile = files.audio;
-    // const fileSize = audioFile.size;
-
-    // console.log(`Received audio file with size: ${fileSize} bytes`);
-
-    let responseMesage: string | null = null
-    let newAudioFileUrl: string | null = null
     try {
-        if (!req.file) {
+
+        if (!req.files) {
             return res.status(400).json({ error: 'No audio file provided.' });
         }
-        const audioFile = req.file;
-        console.log({ audioFile })
-
+        const { files, body } = req
         const s3 = new S3Client({
             credentials: {
                 accessKeyId: s3BucketAccessKey,
@@ -62,30 +46,35 @@ export const saveAudioFile = async (req: any, res: Response, next: NextFunction)
             region: s3BucketRegion
         });
 
-        const audioFileName = `audioFiles/${req.body.userId}-${Date.now()}`
-        const params = {
-            ACL: "public-read",
-            Bucket: s3BucketName,
-            Key: audioFileName,
-            Body: audioFile.buffer,
-            ContentType: audioFile.mimetype,
-        }
-        const command = new PutObjectCommand(params)
-        try {
-            await s3.send(command);
-            newAudioFileUrl = `https://${s3BucketName}.s3.${s3BucketRegion}.amazonaws.com/${audioFileName}`
-            responseMesage = 'Audio file saved'
+        const imageUrls = await Promise.all(files.map(async (file, index) => {
+            let imageUrl;
+            const params = {
+                ACL: "public-read",
+                Bucket: s3BucketName,
+                Key: file.originalname,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+            };
+            const command = new PutObjectCommand(params);
 
-        } catch (err) {
-            console.error('Error uploading image:', err);
-        }
-        // Respond with success
+            try {
+                await s3.send(command);
+                imageUrl = `https://${s3BucketName}.s3.${s3BucketRegion}.amazonaws.com/${file.originalname}`;
+            } catch (err) {
+                console.error('Error uploading image:', err);
+            }
+
+            return imageUrl;
+        }));
+
+
         return res.status(200).json({
-            audioFileUrl: newAudioFileUrl,
-            message: 'Audio file successfully received and saved.'
+            imageUrls,
+            message: 'Images successfully received and saved.'
         });
+
     } catch (error) {
-        console.error('Error handling audio file:', error);
+        console.error('Error handling image files:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };

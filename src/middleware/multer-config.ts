@@ -1,8 +1,9 @@
 import multer from 'multer';
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const audioUpload = multer({ storage: storage });
+const imageUpload = multer({ storage: storage, limits: { files: 6 } });
+const audioUploadMiddleware = audioUpload.single('audio');
+const imagesUploadMiddleware = imageUpload.array('images', 6);
 
-const audioUploadMiddleware = upload.single('audio');
-
-export { audioUploadMiddleware };
+export { audioUploadMiddleware, imagesUploadMiddleware };
