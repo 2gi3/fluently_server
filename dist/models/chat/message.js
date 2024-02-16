@@ -2,6 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from '../../../config/db.config.mjs';
 import User from '../user/index.js';
 import Chatroom from './index.js';
+import MessageImage from "./message_images.js";
 class Message extends Model {
 }
 Message.init({
@@ -37,9 +38,6 @@ Message.init({
     audioDuration: {
         type: DataTypes.NUMBER
     },
-    imageUrl: {
-        type: DataTypes.STRING,
-    },
     created_at: {
         type: DataTypes.DATE,
     }
@@ -53,6 +51,7 @@ Message.init({
 export default Message;
 Message.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 Message.belongsTo(Chatroom, { foreignKey: 'chatId', as: 'chat' });
+Message.hasMany(MessageImage, { foreignKey: 'message_id', as: 'imageUrls' });
 // if you have a message object, you can retrieve the associated user and chatroom as follows:
 // const message = ... fetch or create a message ...
 // Get the associated user and chatroom for the message

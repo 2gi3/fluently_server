@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import Message from '../../models/chat/message.js';
 import Chatroom from '../../models/chat/index.js';
+import MessageImage from '../../models/chat/message_images.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,12 +12,21 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 // const timestamp = new Date().getTime();
 export const createMessage = async (req, res, next) => {
     try {
-        const { chatId, userId, text, status, type, audioUrl, audioDuration, imageUrl } = req.body;
-        console.log({ chatId, userId, text, status, type, audioUrl, audioDuration, imageUrl });
+        const { chatId, userId, text, status, type, audioUrl, audioDuration, imageUrls } = req.body;
+        console.log({ chatId, userId, text, status, type, audioUrl, audioDuration, imageUrls });
         const message = new Message({
-            chatId, userId, text, status, type, audioUrl, audioDuration, imageUrl
+            chatId, userId, text, status, type, audioUrl, audioDuration,
         });
         const newMessage = await message.save();
+        if (imageUrls) {
+            imageUrls.map((imageUrl, i) => {
+                console.log(`imageUrl${i}: ${imageUrl}`);
+                MessageImage.create({
+                    message_id: newMessage.id,
+                    imageUrl: imageUrl
+                });
+            });
+        }
         const chatroom = await Chatroom.findOne({
             where: {
                 id: chatId,
@@ -44,11 +54,21 @@ export const getAllChatroomMessages = async (req, res, next) => {
     const { chatId } = req.params;
     try {
         const chatMessages = await Message.findAll({
-            where: {
-                chatId: chatId
-            }
+            where: { chatId: chatId },
+            include: [
+                {
+                    model: MessageImage,
+                    as: 'imageUrls',
+                    attributes: ['imageUrl'],
+                }
+            ]
         });
-        res.status(200).json(chatMessages);
+        const transformedChatMessages = chatMessages.map(message => ({
+            ...message.toJSON(),
+            imageUrls: message.imageUrls.map(image => image.imageUrl)
+        }));
+        res.status(200).json(transformedChatMessages);
+        // res.status(200).json(chatMessages);
     }
     catch (error) {
         res.status(400).json({

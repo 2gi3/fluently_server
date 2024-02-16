@@ -3,6 +3,7 @@ import sequelize from '../../../config/db.config.mjs';
 import User from '../user/index.js'
 import Chatroom from './index.js'
 import { MessageT } from "../../types/chat.js";
+import MessageImage from "./message_images.js";
 
 
 class Message extends Model<MessageT> {
@@ -14,7 +15,6 @@ class Message extends Model<MessageT> {
     public type?: 'text' | 'audio' | 'image' | null;
     public audioUrl: string | null;
     public audioDuration: number | null;
-    public imageUrl?: string | null;
     public created_at: Date;
 }
 
@@ -52,9 +52,6 @@ Message.init(
         audioDuration: {
             type: DataTypes.NUMBER
         },
-        imageUrl: {
-            type: DataTypes.STRING,
-        },
         created_at: {
             type: DataTypes.DATE,
         }
@@ -72,6 +69,8 @@ export default Message;
 
 Message.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 Message.belongsTo(Chatroom, { foreignKey: 'chatId', as: 'chat' });
+Message.hasMany(MessageImage, { foreignKey: 'message_id', as: 'imageUrls' });
+
 
 
 

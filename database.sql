@@ -30,6 +30,9 @@ CREATE TABLE messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     chatId INT NOT NULL,
     userId INT NOT NULL,
+    type ENUM('text','audio','image')
+    audioUrl varchar(256)
+    audioDuration int
     text VARCHAR(500) NOT NULL,
     status VARCHAR(15) NOT NULL
 );
@@ -116,6 +119,15 @@ CREATE TABLE post_comments (
     FOREIGN KEY (postId) REFERENCES posts(id),
     FOREIGN KEY (commentId) REFERENCES postComments(id)
 );
+
+CREATE TABLE message_images (
+    id int NOT NULL AUTO_INCREMENT,
+    message_id int NOT NULL,
+    imageUrl varchar(256) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (message_id) REFERENCES messages(id)
+);
+
 -- Database Cleaned up code
 -- Create the 'users' table
 CREATE TABLE IF NOT EXISTS users (
@@ -151,6 +163,9 @@ CREATE TABLE IF NOT EXISTS messages (
     userId INT NOT NULL,
     text VARCHAR(500) NOT NULL,
     status VARCHAR(15) NOT NULL,
+    type ENUM('text','audio','image')
+    audioUrl varchar(256)
+    audioDuration int
     FOREIGN KEY (chatId) REFERENCES chatrooms(id),
     FOREIGN KEY (userId) REFERENCES users(id)
 );
@@ -227,4 +242,12 @@ CREATE TABLE post_comments (
     PRIMARY KEY (postId, commentId),
     FOREIGN KEY (postId) REFERENCES posts(id),
     FOREIGN KEY (commentId) REFERENCES postComments(id)
+);
+
+CREATE TABLE message_images (
+    id int NOT NULL AUTO_INCREMENT,
+    message_id int NOT NULL,
+    imageUrl varchar(256) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (message_id) REFERENCES messages(id)
 );

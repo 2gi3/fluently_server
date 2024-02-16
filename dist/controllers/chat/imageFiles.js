@@ -26,19 +26,20 @@ export const saveImageFiles = async (req, res, next) => {
             },
             region: s3BucketRegion
         });
+        const s3BucketDirectory = 'chatImages';
         const imageUrls = await Promise.all(files.map(async (file, index) => {
             let imageUrl;
             const params = {
                 ACL: "public-read",
                 Bucket: s3BucketName,
-                Key: file.originalname,
+                Key: `${s3BucketDirectory}/${file.originalname}`,
                 Body: file.buffer,
                 ContentType: file.mimetype,
             };
             const command = new PutObjectCommand(params);
             try {
                 await s3.send(command);
-                imageUrl = `https://${s3BucketName}.s3.${s3BucketRegion}.amazonaws.com/${file.originalname}`;
+                imageUrl = `https://${s3BucketName}.s3.${s3BucketRegion}.amazonaws.com/${s3BucketDirectory}/${file.originalname}`;
             }
             catch (err) {
                 console.error('Error uploading image:', err);
