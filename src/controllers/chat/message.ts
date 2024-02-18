@@ -22,7 +22,7 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
     try {
         const { chatId, userId, text, status, type, audioUrl, audioDuration, imageUrls } = req.body;
 
-        console.log({ chatId, userId, text, status, type, audioUrl, audioDuration, imageUrls })
+        // console.log({ chatId, userId, text, status, type, audioUrl, audioDuration, imageUrls })
 
         const message = new Message({
             chatId, userId, text, status, type, audioUrl, audioDuration,
@@ -31,7 +31,7 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
         const newMessage = await message.save();
         if (imageUrls) {
             imageUrls.map((imageUrl, i) => {
-                console.log(`imageUrl${i}: ${imageUrl}`)
+                // console.log(`imageUrl${i}: ${imageUrl}`)
                 MessageImage.create({
                     message_id: newMessage.id,
                     imageUrl: imageUrl

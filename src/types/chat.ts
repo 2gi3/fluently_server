@@ -6,12 +6,12 @@ export interface ChatroomT {
 }
 
 export type MessageT = {
-    id?: string;
+    id?: string | number;
     chatId: string | number;
     userId: string | number;
     text: string;
     status: string;
-    created_at?: string;
+    created_at?: string | Date;
     type?: 'text' | 'audio' | 'image' | null
     audioUrl?: string | null,
     audioDuration?: number | null
