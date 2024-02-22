@@ -8,13 +8,13 @@ export const lowLimiter = rateLimit({
 });
 export const mediumLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
-    limit: 150,
+    limit: 200,
     standardHeaders: 'draft-6',
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 });
 export const highlimiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    limit: 50,
+    limit: 55,
     standardHeaders: 'draft-6',
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 });
