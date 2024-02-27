@@ -33,9 +33,11 @@ app.use(cors({
 app.use((req, res, next) => {
     const allowedOrigins = ['http://localhost:8081', 'http://192.168.43.235:8081'];
     const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
+    console.log({ origin })
+
+    // if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    // }
 
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
