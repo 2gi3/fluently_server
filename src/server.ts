@@ -77,7 +77,7 @@ const sendHeartbeat = () => {
 };
 
 wss.on('connection', (ws: WebSocket) => {
-
+    console.log({ userSockets })
     if (!intervalId && ws) {
         intervalId = setInterval(sendHeartbeat, 10000); // 10 seconds
     }
