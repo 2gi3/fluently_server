@@ -77,7 +77,6 @@ const sendHeartbeat = () => {
 };
 
 wss.on('connection', (ws: WebSocket) => {
-    console.log({ userSockets })
     if (!intervalId && ws) {
         intervalId = setInterval(sendHeartbeat, 10000); // 10 seconds
     }
@@ -94,6 +93,7 @@ wss.on('connection', (ws: WebSocket) => {
             }
 
         } else if (parsedMessage.type === 'chatMessage') {
+            console.log({ chatMessage: message })
 
             const recipientId = parsedMessage.recipient;
             const recipientSocket = userSockets.get(recipientId);
