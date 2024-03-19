@@ -99,7 +99,9 @@ wss.on('connection', (ws: WebSocket) => {
             const recipientSocket = userSockets.get(recipientId);
 
             if (recipientSocket) {
-                recipientSocket.send(message);
+                const jsonMessage = JSON.stringify(message);
+                recipientSocket.send(jsonMessage);
+                // recipientSocket.send(message);
             }
 
         } else {

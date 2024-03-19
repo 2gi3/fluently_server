@@ -25,7 +25,6 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const timestamp = new Date().getTime();
 
 export const createChatroom = async (req: Request, res: Response, next: NextFunction) => {
-    console.log('qwerty1230a9')
     try {
         const { user1Id, user2Id } = req.body;
 
