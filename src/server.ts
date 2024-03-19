@@ -97,17 +97,13 @@ wss.on('connection', (ws: WebSocket) => {
 
             const recipientId = parsedMessage.recipient;
             const recipientSocket = userSockets.get(recipientId);
-            if (message instanceof Blob) {
 
-                const reader = new FileReader();
-                reader.onload = function () {
-                    const blobData: any = reader.result;
-                    const textData = new TextDecoder().decode(blobData);
-                    const parsedMessage = JSON.parse(textData)
-                    if (recipientSocket) {
+            if (message instanceof Buffer) {
+                const jsonString = message.toString('utf8');
+                const parsedJson = JSON.parse(jsonString);
 
-                        recipientSocket.send(parsedMessage);
-                    }
+                if (recipientSocket) {
+                    recipientSocket.send(JSON.stringify(parsedJson));
                 }
             }
 
