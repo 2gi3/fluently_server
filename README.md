@@ -129,10 +129,19 @@ This function does the following actions:
 
 ## Database
 MySQL database deployed on AWS RDS
+
+ [Schema](https://lucid.app/lucidchart/51657296-144f-4c77-bb6d-d884633feee1/edit?viewport_loc=771%2C892%2C1634%2C905%2C0_0&invitationId=inv_dac76781-4be4-4192-baf0-91d521b9d3fc)
+
 to connect a terminal to the database:
 - cd C:\Program Files\MySQL\MySQL Server 8.1\bin
 - `mysql.exe -h <YOUR HOST HERE> -P 3306 -u admin -p`
 - Enter password
+
+to dupm database structure:
+- from remote ```mysqldump -h <hostname> -u <username> -p<password> <DbName> > <DbName>_dump.sql```
+
+- from local directory ```mysqldump -u <USER>> -p --no-data <DbName> > <DbName>_structure_only.sql```
+
 
 
 ### ssh certificate 
