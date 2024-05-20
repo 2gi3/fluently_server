@@ -13,7 +13,6 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const timestamp = new Date().getTime();
 export const createChatroom = async (req, res, next) => {
-    console.log('qwerty1230a9');
     try {
         const { user1Id, user2Id } = req.body;
         const existingChatroom = await Chatroom.findOne({

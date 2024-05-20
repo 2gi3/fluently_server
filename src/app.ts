@@ -6,6 +6,7 @@ import database from '../config/db.config.mjs';
 import userRoutes from './routes/user/index.js';
 import chatRoutes from './routes/chat/index.js';
 import authRoutes from './routes/auth/index.js';
+import learnRoutes from './routes/learn/index.js';
 import communityRoutes from './routes/community/index.js';
 import { parse } from 'cookie';
 import cors from 'cors';
@@ -53,6 +54,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/learn', learnRoutes);
 app.use('/api/community', communityRoutes);
 
 export default app;

@@ -78,10 +78,15 @@ wss.on('connection', (ws) => {
             }
         }
         else if (parsedMessage.type === 'chatMessage') {
+            console.log({ chatMessage: message });
             const recipientId = parsedMessage.recipient;
             const recipientSocket = userSockets.get(recipientId);
-            if (recipientSocket) {
-                recipientSocket.send(message);
+            if (message instanceof Buffer) {
+                const jsonString = message.toString('utf8');
+                const parsedJson = JSON.parse(jsonString);
+                if (recipientSocket) {
+                    recipientSocket.send(JSON.stringify(parsedJson));
+                }
             }
         }
         else {
