@@ -2,17 +2,48 @@ import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { CustomRequest } from '../../types/index.js';
-import sequelize from 'sequelize';
+import { CourseT } from '../../types/learning.js';
+import { UserT } from '../../types/user.js';
 
 
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+
+type PickUserT = Pick<UserT, 'id'>;
+
 export const getAllCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {
+        id,
+        creatorId,
+        mediumLanguage,
+        learningLanguage,
+        title,
+        subheading,
+        introductionMD,
+        goalsMD,
+        requirementsMD,
+        videoUrl,
+        imageUrl,
+        level,
+        created_at,
+    } = req.body as {
+        id: CourseT['id'];
+        creatorId: PickUserT;
+        mediumLanguage: CourseT['mediumLanguage'];
+        learningLanguage: CourseT['learningLanguage'];
+        title: CourseT['title'];
+        subheading: CourseT['subheading'];
+        introductionMD: CourseT['introductionMD'];
+        goalsMD: CourseT['goalsMD'];
+        requirementsMD: CourseT['requirementsMD'];
+        videoUrl: CourseT['videoUrl'];
+        imageUrl: CourseT['imageUrl'];
+        level: CourseT['level'];
+        created_at: CourseT['created_at'];
+    };
 
     try {
 
