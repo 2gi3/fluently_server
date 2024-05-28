@@ -2,7 +2,7 @@ import { UserT } from "./user.js";
 
 export type CourseT = {
     id: string;
-    creatorId: Pick<UserT, 'name' | 'image'>;
+    creatorId: Pick<UserT, 'id'>;
     mediumLanguage: "english" | "thai";
     learningLanguage: "english" | "thai";
     title: string;
@@ -14,7 +14,7 @@ export type CourseT = {
     imageUrl: string;
     level: number;
     created_at: Date;
-    units: UnitT[]
+    units?: UnitT[]
 };
 
 export type UnitT = {
