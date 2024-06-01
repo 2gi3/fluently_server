@@ -2,7 +2,7 @@ import { UserT } from "./user.js";
 
 export type CourseT = {
     id: string;
-    creatorId: Pick<UserT, 'id'>;
+    creatorId: number | string;
     mediumLanguage: "english" | "thai";
     learningLanguage: "english" | "thai";
     title: string;
