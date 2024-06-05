@@ -8,5 +8,6 @@ const router: Router = express.Router();
 
 router.get('/courses', mediumLimiter, getAllCourses as RequestHandler);
 router.post('/courses', mediumLimiter, auth, createCourse as RequestHandler);
+// router.post('/courses', mediumLimiter, auth, createCourse as RequestHandler);
 
 export default router;

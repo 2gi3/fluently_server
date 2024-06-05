@@ -5,6 +5,7 @@ import User from '../user/index.js';
 class Course extends Model {
     public id?: string;
     public creatorId: number;
+    public public: boolean;
     public mediumLanguage: 'english' | 'thai';
     public learningLanguage: 'english' | 'thai';
     public title: string;
@@ -32,6 +33,10 @@ Course.init(
                 model: 'User',
                 key: 'id',
             }
+        },
+        public: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true
         },
         mediumLanguage: {
             type: DataTypes.ENUM('english', 'thai'),

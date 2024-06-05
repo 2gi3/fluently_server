@@ -3,6 +3,7 @@ import { UserT } from "./user.js";
 export type CourseT = {
     id: string;
     creatorId: number | string;
+    public: boolean;
     mediumLanguage: "english" | "thai";
     learningLanguage: "english" | "thai";
     title: string;

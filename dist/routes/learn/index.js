@@ -5,5 +5,6 @@ import { createCourse, getAllCourses } from '../../controllers/learn/courses.js'
 const router = express.Router();
 router.get('/courses', mediumLimiter, getAllCourses);
 router.post('/courses', mediumLimiter, auth, createCourse);
+// router.post('/courses', mediumLimiter, auth, createCourse as RequestHandler);
 export default router;
 //# sourceMappingURL=index.js.map
