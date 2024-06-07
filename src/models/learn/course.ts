@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from '../../../config/db.config.mjs';
 import User from '../user/index.js';
+import CourseUnit from "./unit.js";
 
 class Course extends Model {
     public id?: string;
@@ -95,3 +96,4 @@ Course.init(
 export default Course;
 
 Course.belongsTo(User, { foreignKey: 'creatorId', as: 'creator' });
+

@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { CourseT } from '../../types/learning.js';
+import { CourseT, UnitT } from '../../types/learning.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { CustomRequest } from '../../types/index.js';
 import Course from '../../models/learn/course.js';
+import CourseUnit from '../../models/learn/unit.js';
 
 
 // Get the directory name of the current module file
@@ -21,11 +22,18 @@ const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY
 
 
 export const getAllCourses = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
     try {
-        const courses = await Course.findAll();
+        const courses = await Course.findAll({
+            include: [
+                {
+                    model: CourseUnit,
+                    as: 'units',
+                    required: false
+                }
+            ]
+        });
 
-        if (!courses) {
+        if (!courses || courses.length === 0) {
             res.status(404).json({ message: 'No courses found' });
             return;
         }
@@ -136,4 +144,27 @@ export const createCourse = async (req: CustomRequest<CourseT>, res: Response, n
         message: 'New course created successfully!',
         newCourse
     });
+}
+
+export const createUnit = async (req: CustomRequest<UnitT>, res: Response): Promise<void> => {
+
+    console.log(req.body)
+    // if (req.userId != req.body.userId) {
+    //     res.status(403).json({ message: 'You are not authorised to create this Post' });
+
+    // } else {
+    const courseUnit = new CourseUnit({
+        id: req.body.id,
+        courseId: req.body.courseId,
+        title: req.body.title,
+        type: req.body.type,
+    });
+    const newCourseUnit = await courseUnit.save();
+    // await PostComments.create({ postId: newPostComment.postId, commentId: newPostComment.id });
+
+    res.status(201).json({
+        message: 'New courseUnit created successfully!',
+        newCourseUnit
+    });
+
 }

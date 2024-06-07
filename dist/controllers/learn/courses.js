@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import Course from '../../models/learn/course.js';
+import CourseUnit from '../../models/learn/unit.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,8 +14,16 @@ const s3BucketAccessKey = process.env.IAM_ACCESS_KEY;
 const s3BucketSecretAccessKey = process.env.IAM_SECRET_ACCESS_KEY;
 export const getAllCourses = async (req, res, next) => {
     try {
-        const courses = await Course.findAll();
-        if (!courses) {
+        const courses = await Course.findAll({
+            include: [
+                {
+                    model: CourseUnit,
+                    as: 'units',
+                    required: false
+                }
+            ]
+        });
+        if (!courses || courses.length === 0) {
             res.status(404).json({ message: 'No courses found' });
             return;
         }
@@ -79,6 +88,24 @@ export const createCourse = async (req, res, next) => {
     res.status(201).json({
         message: 'New course created successfully!',
         newCourse
+    });
+};
+export const createUnit = async (req, res) => {
+    console.log(req.body);
+    // if (req.userId != req.body.userId) {
+    //     res.status(403).json({ message: 'You are not authorised to create this Post' });
+    // } else {
+    const courseUnit = new CourseUnit({
+        id: req.body.id,
+        courseId: req.body.courseId,
+        title: req.body.title,
+        type: req.body.type,
+    });
+    const newCourseUnit = await courseUnit.save();
+    // await PostComments.create({ postId: newPostComment.postId, commentId: newPostComment.id });
+    res.status(201).json({
+        message: 'New courseUnit created successfully!',
+        newCourseUnit
     });
 };
 //# sourceMappingURL=courses.js.map
