@@ -4,6 +4,7 @@ import path from 'path';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import Course from '../../models/learn/course.js';
 import CourseUnit from '../../models/learn/unit.js';
+import Lesson from '../../models/learn/lesson.js';
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -106,6 +107,25 @@ export const createUnit = async (req, res) => {
     res.status(201).json({
         message: 'New courseUnit created successfully!',
         newCourseUnit
+    });
+};
+export const createLesson = async (req, res) => {
+    console.log(req.body);
+    // if (req.userId != req.body.userId) {
+    //     res.status(403).json({ message: 'You are not authorised to create this Post' });
+    // } else {
+    const lesson = new Lesson({
+        id: req.body.id,
+        userId: req.body.userId,
+        courseId: req.body.courseId,
+        unitId: req.body.unitId,
+        title: req.body.title,
+        videoUrl: req.body.videoUrl,
+    });
+    const newLesson = await lesson.save();
+    res.status(201).json({
+        message: 'New lesson created successfully!',
+        newLesson
     });
 };
 //# sourceMappingURL=courses.js.map

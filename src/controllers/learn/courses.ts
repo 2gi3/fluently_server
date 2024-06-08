@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { CourseT, UnitT } from '../../types/learning.js';
+import { CourseT, LessonT, UnitT } from '../../types/learning.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { CustomRequest } from '../../types/index.js';
 import Course from '../../models/learn/course.js';
 import CourseUnit from '../../models/learn/unit.js';
+import Lesson from '../../models/learn/lesson.js';
 
 
 // Get the directory name of the current module file
@@ -165,6 +166,30 @@ export const createUnit = async (req: CustomRequest<UnitT>, res: Response): Prom
     res.status(201).json({
         message: 'New courseUnit created successfully!',
         newCourseUnit
+    });
+
+}
+
+export const createLesson = async (req: CustomRequest<LessonT>, res: Response): Promise<void> => {
+
+    console.log(req.body)
+    // if (req.userId != req.body.userId) {
+    //     res.status(403).json({ message: 'You are not authorised to create this Post' });
+
+    // } else {
+    const lesson = new Lesson({
+        id: req.body.id,
+        userId: req.body.userId,
+        courseId: req.body.courseId,
+        unitId: req.body.unitId,
+        title: req.body.title,
+        videoUrl: req.body.videoUrl,
+    });
+    const newLesson = await lesson.save();
+
+    res.status(201).json({
+        message: 'New lesson created successfully!',
+        newLesson
     });
 
 }
