@@ -29,7 +29,14 @@ export const getAllCourses = async (req: Request, res: Response, next: NextFunct
                 {
                     model: CourseUnit,
                     as: 'units',
-                    required: false
+                    required: false,
+                    include: [
+                        {
+                            model: Lesson,
+                            as: 'lessons',
+                            required: false
+                        }
+                    ]
                 }
             ]
         });

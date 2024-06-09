@@ -20,7 +20,14 @@ export const getAllCourses = async (req, res, next) => {
                 {
                     model: CourseUnit,
                     as: 'units',
-                    required: false
+                    required: false,
+                    include: [
+                        {
+                            model: Lesson,
+                            as: 'lessons',
+                            required: false
+                        }
+                    ]
                 }
             ]
         });
