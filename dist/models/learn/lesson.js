@@ -45,7 +45,7 @@ Lesson.init({
 }, {
     sequelize,
     modelName: "Lesson",
-    tableName: "Lessons",
+    tableName: "lessons",
     timestamps: false,
     createdAt: 'created_at'
 });
@@ -54,16 +54,4 @@ Lesson.belongsTo(Course, { foreignKey: 'courseId', as: 'course' });
 Lesson.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 Lesson.belongsTo(CourseUnit, { foreignKey: 'unitId', as: 'unit' });
 CourseUnit.hasMany(Lesson, { foreignKey: 'unitId', as: 'lessons' });
-// CREATE TABLE lessons (
-//         id VARCHAR(255) PRIMARY KEY,
-//         userId INT NOT NULL,
-//         courseId VARCHAR(255) NOT NULL,
-//         unitId VARCHAR(255) NOT NULL,
-//         title VARCHAR(50) NOT NULL,
-//          videoUrl VARCHAR(255) NOT NULL,
-//          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-//          FOREIGN KEY (userId) REFERENCES users(id),
-//          FOREIGN KEY (courseId) REFERENCES courses(id),
-//          FOREIGN KEY (unitId) REFERENCES courseunits(id)
-//      );
 //# sourceMappingURL=lesson.js.map
